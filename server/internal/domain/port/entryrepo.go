@@ -1,0 +1,36 @@
+package port
+
+import (
+	"context"
+
+	"github.com/alrund/yp-2-project/server/internal/domain/entity"
+	"github.com/google/uuid"
+)
+
+type EntryGetter interface {
+	Get(ctx context.Context, entryID uuid.UUID) (*entity.Entry, error)
+}
+
+type EntryAllByUserGetter interface {
+	GetByUser(ctx context.Context, user *entity.User) ([]*entity.Entry, error)
+}
+
+type EntryAdder interface {
+	Add(ctx context.Context, entry *entity.Entry) error
+}
+
+type EntryChanger interface {
+	Change(ctx context.Context, entry *entity.Entry) error
+}
+
+type EntryRemover interface {
+	Remove(ctx context.Context, entryID uuid.UUID) error
+}
+
+type EntryRepository interface {
+	EntryGetter
+	EntryAllByUserGetter
+	EntryAdder
+	EntryChanger
+	EntryRemover
+}

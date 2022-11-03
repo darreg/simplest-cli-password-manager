@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS types
+(
+    id UUID NOT NULL PRIMARY KEY,
+    name VARCHAR(255)
+);

@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "pkg/proto";
+
+message RegistrationRequest {
+  string login = 1;
+  string password = 2;
+}
+
+message RegistrationResponse {}
+
+message LoginRequest {
+  string login = 1;
+  string password = 2;
+}
+
+message LoginResponse {}
+
+message SetRequest {
+  string type_id = 1;
+  string name = 2;
+  string metadata = 3;
+  bytes data = 4;
+}
+
+message SetResponse {}
+
+message GetRequest {
+  string entry_id = 1;
+}
+
+message GetResponse {
+  string entry_id = 1;
+  string type_id = 2;
+  string name = 3;
+  string metadata = 4;
+  bytes data = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+message GetListRequest {}
+
+message GetListResponse {
+  message Entry {
+    string entry_id = 1;
+    string type_id = 2;
+    string name = 3;
+    google.protobuf.Timestamp created_at = 4;
+    google.protobuf.Timestamp updated_at = 5;
+  }
+
+  repeated Entry entries = 1;
+}
+
+message DeleteRequest {
+  string entry_id = 1;
+}
+
+message DeleteResponse {}
+
+
+service App {
+  rpc Registration(RegistrationRequest) returns (RegistrationResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc Set(SetRequest) returns (SetResponse);
+  rpc Get(GetRequest) returns (GetResponse);
+  rpc GetList(GetListRequest) returns (GetListResponse);
+  rpc Delete(DeleteRequest) returns (DeleteResponse);
+}
