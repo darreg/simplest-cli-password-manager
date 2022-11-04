@@ -15,11 +15,11 @@ type Server struct {
 	grpcServer                    *grpc.Server
 }
 
-func NewServer(RunAddress, CertFile, KeyFile string) *Server {
+func NewServer(runAddress, certFile, keyFile string) *Server {
 	return &Server{
-		runAddress: RunAddress,
-		certFile:   CertFile,
-		keyFile:    KeyFile,
+		runAddress: runAddress,
+		certFile:   certFile,
+		keyFile:    keyFile,
 	}
 }
 
@@ -34,7 +34,7 @@ func (s *Server) Serve(handlerCollection any) error {
 		return err
 	}
 
-	s.grpcServer = grpc.NewServer(grpc.Creds(creds)) //grpc.UnaryInterceptor(collection.AuthInterceptor(a.Encryptor))
+	s.grpcServer = grpc.NewServer(grpc.Creds(creds)) // grpc.UnaryInterceptor(collection.AuthInterceptor(a.Encryptor))
 
 	proto.RegisterAppServer(s.grpcServer, collection)
 

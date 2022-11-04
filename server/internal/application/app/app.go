@@ -56,7 +56,7 @@ func (a *App) Run(handlerCollection any) error {
 	go func() {
 		<-ctx.Done()
 		if err := a.Server.Shutdown(); err != nil {
-			a.Logger.Error(fmt.Errorf("GRPC server Shutdown: %v", err))
+			a.Logger.Error(fmt.Errorf("GRPC server Shutdown: %w", err))
 		}
 
 		close(shutdownCh)

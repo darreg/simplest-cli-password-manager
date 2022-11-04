@@ -3,6 +3,9 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"regexp"
+	"testing"
+
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/alrund/yp-2-project/server/internal/application/usecase"
 	"github.com/alrund/yp-2-project/server/internal/domain/entity"
@@ -10,8 +13,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"regexp"
-	"testing"
 )
 
 func TestGet(t *testing.T) {
@@ -51,7 +52,7 @@ func TestGet(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repository := NewTypeRepository(&adapter.Transactor{Db: db})
+			repository := NewTypeRepository(&adapter.Transactor{DB: db})
 			got, err := repository.Get(context.Background(), tt.args.ID)
 			require.Nil(t, err)
 			if tt.want != nil {
@@ -99,7 +100,7 @@ func TestGetFail(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repository := NewTypeRepository(&adapter.Transactor{Db: db})
+			repository := NewTypeRepository(&adapter.Transactor{DB: db})
 			got, err := repository.Get(context.Background(), tt.args.ID)
 			if tt.want != nil {
 				require.NotNil(t, got)
@@ -152,7 +153,7 @@ func TestAdd(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repository := NewTypeRepository(&adapter.Transactor{Db: db})
+			repository := NewTypeRepository(&adapter.Transactor{DB: db})
 			err := repository.Add(context.Background(), tt.args.tp)
 			if tt.wantErr {
 				assert.NotNil(t, err)
@@ -202,7 +203,7 @@ func TestChange(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repository := NewTypeRepository(&adapter.Transactor{Db: db})
+			repository := NewTypeRepository(&adapter.Transactor{DB: db})
 			err := repository.Change(context.Background(), tt.args.tp)
 			if tt.wantErr {
 				assert.NotNil(t, err)
@@ -249,7 +250,7 @@ func TestRemove(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repository := NewTypeRepository(&adapter.Transactor{Db: db})
+			repository := NewTypeRepository(&adapter.Transactor{DB: db})
 			err := repository.Remove(context.Background(), tt.args.ID)
 			if tt.wantErr {
 				assert.NotNil(t, err)
