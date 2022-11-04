@@ -6,8 +6,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/alrund/yp-1-project/internal/domain/entity"
-	"github.com/alrund/yp-1-project/mocks"
+	"github.com/alrund/yp-2-project/server/internal/domain/entity"
+	"github.com/alrund/yp-2-project/server/mocks"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
@@ -48,7 +48,6 @@ func TestLogin(t *testing.T) {
 							ID:           uuid.New(),
 							Login:        a.cred.Login,
 							PasswordHash: a.cred.Password,
-							Current:      0,
 						},
 						nil,
 					)

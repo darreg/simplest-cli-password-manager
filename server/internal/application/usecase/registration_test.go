@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/alrund/yp-1-project/internal/domain/entity"
-	"github.com/alrund/yp-1-project/mocks"
+	"github.com/alrund/yp-2-project/server/internal/domain/entity"
+	"github.com/alrund/yp-2-project/server/mocks"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -79,7 +79,6 @@ func TestRegistration(t *testing.T) {
 							ID:           uuid.New(),
 							Login:        "other login",
 							PasswordHash: "other hash",
-							Current:      0,
 						},
 						nil,
 					)
