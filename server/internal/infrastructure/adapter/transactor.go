@@ -9,15 +9,15 @@ import (
 type txKey struct{}
 
 type Transactor struct {
-	db *sql.DB
+	Db *sql.DB
 }
 
 func NewTransactor(db *sql.DB) *Transactor {
-	return &Transactor{db: db}
+	return &Transactor{Db: db}
 }
 
 func (t Transactor) WithinTransaction(ctx context.Context, tFunc func(ctx context.Context) error) error {
-	tx, err := t.db.Begin()
+	tx, err := t.Db.Begin()
 	if err != nil {
 		return fmt.Errorf("begin transaction: %w", err)
 	}
@@ -37,7 +37,7 @@ func (t Transactor) QueryContext(ctx context.Context, query string, args ...inte
 		return tx.QueryContext(ctx, query, args...)
 	}
 
-	return t.db.QueryContext(ctx, query, args...)
+	return t.Db.QueryContext(ctx, query, args...)
 }
 
 func (t Transactor) QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row {
@@ -45,7 +45,7 @@ func (t Transactor) QueryRowContext(ctx context.Context, query string, args ...i
 		return tx.QueryRowContext(ctx, query, args...)
 	}
 
-	return t.db.QueryRowContext(ctx, query, args...)
+	return t.Db.QueryRowContext(ctx, query, args...)
 }
 
 func (t Transactor) ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
@@ -53,7 +53,7 @@ func (t Transactor) ExecContext(ctx context.Context, query string, args ...inter
 		return tx.ExecContext(ctx, query, args...)
 	}
 
-	return t.db.ExecContext(ctx, query, args...)
+	return t.Db.ExecContext(ctx, query, args...)
 }
 
 func (t Transactor) extractTx(ctx context.Context) *sql.Tx {

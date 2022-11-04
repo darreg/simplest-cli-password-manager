@@ -29,9 +29,9 @@ func Builder(config *app.Config, logger port.Logger) (*app.App, error) {
 		hasher          = adapter.NewHasher()
 		encryptor       = adapter.NewEncryptor(config.CipherPass)
 		transactor      = adapter.NewTransactor(storage.Connect())
-		userRepository  = repository.NewUserRepository(transactor, storage.Connect())
-		typeRepository  = repository.NewTypeRepository(transactor, storage.Connect())
-		entryRepository = repository.NewEntryRepository(transactor, storage.Connect())
+		userRepository  = repository.NewUserRepository(transactor)
+		typeRepository  = repository.NewTypeRepository(transactor)
+		entryRepository = repository.NewEntryRepository(transactor)
 		server          = adapter.NewServer(config.RunAddress, config.CertFile, config.KeyFile)
 	)
 

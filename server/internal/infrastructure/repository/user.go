@@ -13,11 +13,10 @@ import (
 
 type UserRepository struct {
 	tx *adapter.Transactor
-	db *sql.DB
 }
 
-func NewUserRepository(tx *adapter.Transactor, db *sql.DB) *UserRepository {
-	return &UserRepository{tx: tx, db: db}
+func NewUserRepository(tx *adapter.Transactor) *UserRepository {
+	return &UserRepository{tx: tx}
 }
 
 func (u UserRepository) Get(ctx context.Context, userID uuid.UUID) (*entity.User, error) {
@@ -82,7 +81,7 @@ func (u UserRepository) Add(ctx context.Context, user *entity.User) error {
 
 func (u UserRepository) Change(ctx context.Context, user *entity.User) error {
 	_, err := u.tx.ExecContext(ctx,
-		"UPDATE users SET login=$2, current=$3 WHERE id=$1", user.ID, user.Login,
+		"UPDATE users SET login=$2 WHERE id=$1", user.ID, user.Login,
 	)
 	if err != nil {
 		return err

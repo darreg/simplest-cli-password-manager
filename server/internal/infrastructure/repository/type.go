@@ -2,8 +2,10 @@ package repository
 
 import (
 	"context"
-
 	"database/sql"
+	"errors"
+
+	"github.com/alrund/yp-2-project/server/internal/application/usecase"
 	"github.com/alrund/yp-2-project/server/internal/domain/entity"
 	"github.com/alrund/yp-2-project/server/internal/infrastructure/adapter"
 	"github.com/google/uuid"
@@ -11,30 +13,51 @@ import (
 
 type TypeRepository struct {
 	tx *adapter.Transactor
-	db *sql.DB
 }
 
-func NewTypeRepository(tx *adapter.Transactor, db *sql.DB) *TypeRepository {
-	return &TypeRepository{tx: tx, db: db}
+func NewTypeRepository(tx *adapter.Transactor) *TypeRepository {
+	return &TypeRepository{tx: tx}
 }
 
 func (t TypeRepository) Get(ctx context.Context, tpID uuid.UUID) (*entity.Type, error) {
-	//TODO implement me
-	panic("implement me")
+	var tp entity.Type
+
+	err := t.tx.QueryRowContext(ctx,
+		"SELECT id, name FROM types WHERE id = $1", tpID,
+	).Scan(&tp.ID, &tp.Name)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, usecase.ErrTypeNotFound
+		}
+		return nil, err
+	}
+
+	return &tp, nil
 }
 
 func (t TypeRepository) Add(ctx context.Context, tp *entity.Type) error {
-	//TODO implement me
-	panic("implement me")
+	_, err := t.tx.ExecContext(ctx,
+		"INSERT INTO types (id, name) VALUES ($1, $2)",
+		tp.ID, tp.Name)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (t TypeRepository) Change(ctx context.Context, tp *entity.Type) error {
-	//TODO implement me
-	panic("implement me")
+	_, err := t.tx.ExecContext(ctx,
+		"UPDATE types SET name=$2 WHERE id=$1",
+		tp.ID, tp.Name)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (t TypeRepository) Remove(ctx context.Context, tpID uuid.UUID) error {
-	//TODO implement me
-	panic("implement me")
+	_, err := t.tx.ExecContext(ctx, "DELETE FROM types WHERE id=$1", tpID)
+	return err
 }
-

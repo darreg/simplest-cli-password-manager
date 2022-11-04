@@ -12,7 +12,7 @@ type EntryGetter interface {
 }
 
 type EntryAllByUserGetter interface {
-	GetByUser(ctx context.Context, user *entity.User) ([]*entity.Entry, error)
+	GetAllByUser(ctx context.Context, user *entity.User) ([]*entity.Entry, error)
 }
 
 type EntryAdder interface {
