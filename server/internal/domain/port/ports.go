@@ -19,6 +19,11 @@ type Logger interface {
 	Fatal(err error, args ...interface{})
 }
 
+type Server interface {
+	Serve(handlerCollection any) error
+	Shutdown() error
+}
+
 type PasswordHasher interface {
 	Hash(password string) string
 }

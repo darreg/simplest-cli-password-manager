@@ -32,11 +32,13 @@ func Builder(config *app.Config, logger port.Logger) (*app.App, error) {
 		userRepository  = repository.NewUserRepository(transactor, storage.Connect())
 		typeRepository  = repository.NewTypeRepository(transactor, storage.Connect())
 		entryRepository = repository.NewEntryRepository(transactor, storage.Connect())
+		server          = adapter.NewServer(config.RunAddress, config.CertFile, config.KeyFile)
 	)
 
 	return app.NewApp(
 		config,
 		logger,
+		server,
 		encryptor,
 		hasher,
 		storage,

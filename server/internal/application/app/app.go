@@ -1,10 +1,18 @@
 package app
 
-import "github.com/alrund/yp-2-project/server/internal/domain/port"
+import (
+	"context"
+	"fmt"
+	"os/signal"
+	"syscall"
+
+	"github.com/alrund/yp-2-project/server/internal/domain/port"
+)
 
 type App struct {
 	Config          *Config
 	Logger          port.Logger
+	Server          port.Server
 	Encryptor       port.Encryptor
 	Hasher          port.PasswordHasher
 	Storage         port.Storage
@@ -17,6 +25,7 @@ type App struct {
 func NewApp(
 	config *Config,
 	logger port.Logger,
+	server port.Server,
 	encryptor port.Encryptor,
 	hasher port.PasswordHasher,
 	storage port.Storage,
@@ -28,6 +37,7 @@ func NewApp(
 	return &App{
 		Config:          config,
 		Logger:          logger,
+		Server:          server,
 		Encryptor:       encryptor,
 		Hasher:          hasher,
 		Storage:         storage,
@@ -38,10 +48,29 @@ func NewApp(
 	}
 }
 
-func (a *App) Run() error {
-	return a.Serve()
-}
+func (a *App) Run(handlerCollection any) error {
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
+	defer stop()
 
-func (a *App) Stop() error {
+	shutdownCh := make(chan struct{})
+	go func() {
+		<-ctx.Done()
+		if err := a.Server.Shutdown(); err != nil {
+			a.Logger.Error(fmt.Errorf("GRPC server Shutdown: %v", err))
+		}
+
+		close(shutdownCh)
+	}()
+
+	a.Logger.Info("starting GRPC server", "addr", a.Config.RunAddress)
+
+	err := a.Server.Serve(handlerCollection)
+	if err != nil {
+		return err
+	}
+
+	<-shutdownCh
+	fmt.Println("GRPC server Shutdown gracefully")
+
 	return nil
 }

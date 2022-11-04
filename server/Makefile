@@ -33,3 +33,9 @@ migration-down:
 
 mock-generate:
 	mockery --dir=internal/domain/port --all --with-expecter
+
+protoc:
+	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative ./pkg/proto/app.proto
+
+ssl-generate:
+	openssl req -newkey rsa:4096 -nodes -keyout local.key -x509 -sha256 -days 365 -subj "/C=US/ST=WA/L=SEATTLE/O=MyCompany/OU=MyDivision/CN=*.domain.test" -addext "subjectAltName = DNS:*.domain.test, DNS:localhost, DNS:127.0.0.1, DNS:mail.domain.test" -out local.crt
