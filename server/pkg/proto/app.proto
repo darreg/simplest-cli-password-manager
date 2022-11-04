@@ -43,9 +43,9 @@ message GetResponse {
   google.protobuf.Timestamp updated_at = 7;
 }
 
-message GetListRequest {}
+message GetAllRequest {}
 
-message GetListResponse {
+message GetAllResponse {
   message Entry {
     string entry_id = 1;
     string type_id = 2;
@@ -69,6 +69,6 @@ service App {
   rpc Login(LoginRequest) returns (LoginResponse);
   rpc Set(SetRequest) returns (SetResponse);
   rpc Get(GetRequest) returns (GetResponse);
-  rpc GetList(GetListRequest) returns (GetListResponse);
+  rpc GetAll(GetAllRequest) returns (GetAllResponse);
   rpc Delete(DeleteRequest) returns (DeleteResponse);
 }
