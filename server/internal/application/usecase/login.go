@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 
 	"github.com/alrund/yp-2-project/server/internal/domain/entity"
 	"github.com/alrund/yp-2-project/server/internal/domain/port"
@@ -20,7 +21,10 @@ func Login(
 ) (*entity.User, error) {
 	user, err := userRepository.GetByCredential(ctx, cred.Login, hasher.Hash(cred.Password))
 	if err != nil {
-		return nil, err
+		if errors.Is(err, ErrUserNotFound) {
+			return nil, ErrNotAuthenticated
+		}
+		return nil, ErrInternalServerError
 	}
 
 	return user, nil
