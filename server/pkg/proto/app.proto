@@ -11,14 +11,18 @@ message RegistrationRequest {
   string password = 2;
 }
 
-message RegistrationResponse {}
+message RegistrationResponse {
+  string encrypted_session_key = 1;
+}
 
 message LoginRequest {
   string login = 1;
   string password = 2;
 }
 
-message LoginResponse {}
+message LoginResponse {
+  string encrypted_session_key = 1;
+}
 
 message SetRequest {
   string type_id = 1;
@@ -62,6 +66,17 @@ message DeleteRequest {
 }
 
 message DeleteResponse {}
+
+message GetAllTypesRequest {}
+
+message GetAllTypesResponse {
+  message Type {
+    string type_id = 1;
+    string name = 2;
+  }
+
+  repeated Type types = 1;
+}
 
 
 service App {
