@@ -30,7 +30,15 @@ type PasswordHasher interface {
 
 type Encryptor interface {
 	Encrypt(data []byte) (string, error)
+}
+
+type Decryptor interface {
 	Decrypt(encrypted string) ([]byte, error)
+}
+
+type EncryptDecryptor interface {
+	Encryptor
+	Decryptor
 }
 
 type Storage interface {

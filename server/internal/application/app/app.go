@@ -13,7 +13,7 @@ type App struct {
 	Config            *Config
 	Logger            port.Logger
 	Server            port.Server
-	Encryptor         port.Encryptor
+	Encryptor         port.EncryptDecryptor
 	Hasher            port.PasswordHasher
 	Storage           port.Storage
 	Transactor        port.Transactor
@@ -27,7 +27,7 @@ func NewApp(
 	config *Config,
 	logger port.Logger,
 	server port.Server,
-	encryptor port.Encryptor,
+	encryptor port.EncryptDecryptor,
 	hasher port.PasswordHasher,
 	storage port.Storage,
 	transactor port.Transactor,
