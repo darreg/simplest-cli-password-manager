@@ -10,16 +10,17 @@ import (
 )
 
 type App struct {
-	Config          *Config
-	Logger          port.Logger
-	Server          port.Server
-	Encryptor       port.Encryptor
-	Hasher          port.PasswordHasher
-	Storage         port.Storage
-	Transactor      port.Transactor
-	UserRepository  port.UserRepository
-	TypeRepository  port.TypeRepository
-	EntryRepository port.EntryRepository
+	Config            *Config
+	Logger            port.Logger
+	Server            port.Server
+	Encryptor         port.Encryptor
+	Hasher            port.PasswordHasher
+	Storage           port.Storage
+	Transactor        port.Transactor
+	UserRepository    port.UserRepository
+	TypeRepository    port.TypeRepository
+	EntryRepository   port.EntryRepository
+	SessionRepository port.SessionRepository
 }
 
 func NewApp(
@@ -33,18 +34,20 @@ func NewApp(
 	userRepository port.UserRepository,
 	typeRepository port.TypeRepository,
 	entryRepository port.EntryRepository,
+	sessionRepository port.SessionRepository,
 ) *App {
 	return &App{
-		Config:          config,
-		Logger:          logger,
-		Server:          server,
-		Encryptor:       encryptor,
-		Hasher:          hasher,
-		Storage:         storage,
-		Transactor:      transactor,
-		UserRepository:  userRepository,
-		TypeRepository:  typeRepository,
-		EntryRepository: entryRepository,
+		Config:            config,
+		Logger:            logger,
+		Server:            server,
+		Encryptor:         encryptor,
+		Hasher:            hasher,
+		Storage:           storage,
+		Transactor:        transactor,
+		UserRepository:    userRepository,
+		TypeRepository:    typeRepository,
+		EntryRepository:   entryRepository,
+		SessionRepository: sessionRepository,
 	}
 }
 

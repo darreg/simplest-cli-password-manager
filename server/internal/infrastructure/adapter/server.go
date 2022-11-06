@@ -2,6 +2,8 @@ package adapter
 
 import (
 	"fmt"
+	"github.com/alrund/yp-2-project/server/internal/domain/port"
+	"github.com/alrund/yp-2-project/server/internal/infrastructure/interceptor"
 	"net"
 
 	"github.com/alrund/yp-2-project/server/internal/infrastructure/handler"
@@ -12,14 +14,22 @@ import (
 
 type Server struct {
 	runAddress, certFile, keyFile string
+	encryptor                     port.Encryptor
 	grpcServer                    *grpc.Server
+	sessionRepository             port.SessionRepository
 }
 
-func NewServer(runAddress, certFile, keyFile string) *Server {
+func NewServer(
+	runAddress, certFile, keyFile string,
+	encryptor port.Encryptor,
+	sessionRepository port.SessionRepository,
+) *Server {
 	return &Server{
-		runAddress: runAddress,
-		certFile:   certFile,
-		keyFile:    keyFile,
+		runAddress:        runAddress,
+		certFile:          certFile,
+		keyFile:           keyFile,
+		encryptor:         encryptor,
+		sessionRepository: sessionRepository,
 	}
 }
 
@@ -34,7 +44,10 @@ func (s *Server) Serve(handlerCollection any) error {
 		return err
 	}
 
-	s.grpcServer = grpc.NewServer(grpc.Creds(creds)) // grpc.UnaryInterceptor(collection.AuthInterceptor(a.Encryptor))
+	s.grpcServer = grpc.NewServer(
+		grpc.Creds(creds),
+		grpc.UnaryInterceptor(interceptor.Auth(s.sessionRepository, s.encryptor)),
+	)
 
 	proto.RegisterAppServer(s.grpcServer, collection)
 

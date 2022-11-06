@@ -26,13 +26,20 @@ func Builder(config *app.Config, logger port.Logger) (*app.App, error) {
 	}
 
 	var (
-		hasher          = adapter.NewHasher()
-		encryptor       = adapter.NewEncryptor(config.CipherPass)
-		transactor      = adapter.NewTransactor(storage.Connect())
-		userRepository  = repository.NewUserRepository(transactor)
-		typeRepository  = repository.NewTypeRepository(transactor)
-		entryRepository = repository.NewEntryRepository(transactor)
-		server          = adapter.NewServer(config.RunAddress, config.CertFile, config.KeyFile)
+		hasher            = adapter.NewHasher()
+		encryptor         = adapter.NewEncryptor(config.CipherPass)
+		transactor        = adapter.NewTransactor(storage.Connect())
+		userRepository    = repository.NewUserRepository(transactor)
+		typeRepository    = repository.NewTypeRepository(transactor)
+		entryRepository   = repository.NewEntryRepository(transactor)
+		sessionRepository = repository.NewSessionRepository(transactor)
+		server            = adapter.NewServer(
+			config.RunAddress,
+			config.CertFile,
+			config.KeyFile,
+			encryptor,
+			sessionRepository,
+		)
 	)
 
 	return app.NewApp(
@@ -46,5 +53,6 @@ func Builder(config *app.Config, logger port.Logger) (*app.App, error) {
 		userRepository,
 		typeRepository,
 		entryRepository,
+		sessionRepository,
 	), nil
 }
