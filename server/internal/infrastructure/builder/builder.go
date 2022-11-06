@@ -34,6 +34,7 @@ func Builder(config *app.Config, logger port.Logger) (*app.App, error) {
 		entryRepository   = repository.NewEntryRepository(transactor)
 		sessionRepository = repository.NewSessionRepository(transactor)
 		server            = adapter.NewServer(
+			config.SessionLifeTime,
 			config.RunAddress,
 			config.CertFile,
 			config.KeyFile,

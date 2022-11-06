@@ -13,22 +13,25 @@ import (
 )
 
 type Server struct {
-	runAddress, certFile, keyFile string
-	encryptor                     port.Encryptor
-	grpcServer                    *grpc.Server
-	sessionRepository             port.SessionRepository
+	sessionLifeTime, runAddress string
+	certFile, keyFile           string
+	decryptor                   port.Decryptor
+	grpcServer                  *grpc.Server
+	sessionRepository           port.SessionRepository
 }
 
 func NewServer(
-	runAddress, certFile, keyFile string,
-	encryptor port.Encryptor,
+	sessionLifeTime, runAddress string,
+	certFile, keyFile string,
+	decryptor port.Decryptor,
 	sessionRepository port.SessionRepository,
 ) *Server {
 	return &Server{
+		sessionLifeTime:   sessionLifeTime,
 		runAddress:        runAddress,
 		certFile:          certFile,
 		keyFile:           keyFile,
-		encryptor:         encryptor,
+		decryptor:         decryptor,
 		sessionRepository: sessionRepository,
 	}
 }
@@ -46,7 +49,7 @@ func (s *Server) Serve(handlerCollection any) error {
 
 	s.grpcServer = grpc.NewServer(
 		grpc.Creds(creds),
-		grpc.UnaryInterceptor(interceptor.Auth(s.sessionRepository, s.encryptor)),
+		grpc.UnaryInterceptor(interceptor.Auth(s.sessionLifeTime, s.sessionRepository, s.decryptor)),
 	)
 
 	proto.RegisterAppServer(s.grpcServer, collection)
