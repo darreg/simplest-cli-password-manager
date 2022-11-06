@@ -2,11 +2,11 @@ package adapter
 
 import (
 	"fmt"
-	"github.com/alrund/yp-2-project/server/internal/domain/port"
-	"github.com/alrund/yp-2-project/server/internal/infrastructure/interceptor"
 	"net"
 
+	"github.com/alrund/yp-2-project/server/internal/domain/port"
 	"github.com/alrund/yp-2-project/server/internal/infrastructure/handler"
+	"github.com/alrund/yp-2-project/server/internal/infrastructure/interceptor"
 	"github.com/alrund/yp-2-project/server/pkg/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
