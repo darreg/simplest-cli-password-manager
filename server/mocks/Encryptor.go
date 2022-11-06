@@ -17,52 +17,6 @@ func (_m *Encryptor) EXPECT() *Encryptor_Expecter {
 	return &Encryptor_Expecter{mock: &_m.Mock}
 }
 
-// Decrypt provides a mock function with given fields: encrypted
-func (_m *Encryptor) Decrypt(encrypted string) ([]byte, error) {
-	ret := _m.Called(encrypted)
-
-	var r0 []byte
-	if rf, ok := ret.Get(0).(func(string) []byte); ok {
-		r0 = rf(encrypted)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]byte)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(encrypted)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// Encryptor_Decrypt_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Decrypt'
-type Encryptor_Decrypt_Call struct {
-	*mock.Call
-}
-
-// Decrypt is a helper method to define mock.On call
-//  - encrypted string
-func (_e *Encryptor_Expecter) Decrypt(encrypted interface{}) *Encryptor_Decrypt_Call {
-	return &Encryptor_Decrypt_Call{Call: _e.mock.On("Decrypt", encrypted)}
-}
-
-func (_c *Encryptor_Decrypt_Call) Run(run func(encrypted string)) *Encryptor_Decrypt_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(string))
-	})
-	return _c
-}
-
-func (_c *Encryptor_Decrypt_Call) Return(_a0 []byte, _a1 error) *Encryptor_Decrypt_Call {
-	_c.Call.Return(_a0, _a1)
-	return _c
-}
-
 // Encrypt provides a mock function with given fields: data
 func (_m *Encryptor) Encrypt(data []byte) (string, error) {
 	ret := _m.Called(data)
