@@ -13,13 +13,13 @@ var enc = NewEncryptor("J53RPX6")
 func TestEncrypt(t *testing.T) {
 	tests := []struct {
 		name    string
-		data    string
+		data    []byte
 		want    string
 		wantErr bool
 	}{
 		{
 			name:    "success",
-			data:    "раз два три",
+			data:    []byte("раз два три"),
 			want:    "d54f7a94af13b05cf383b5715e8b45d91dbe2ce8588d464304f67eddb237e752b2540951",
 			wantErr: false,
 		},
@@ -41,13 +41,13 @@ func TestDecrypt(t *testing.T) {
 	tests := []struct {
 		name    string
 		data    string
-		want    string
+		want    []byte
 		wantErr bool
 	}{
 		{
 			name:    "success",
 			data:    "d54f7a94af13b05cf383b5715e8b45d91dbe2ce8588d464304f67eddb237e752b2540951",
-			want:    "раз два три",
+			want:    []byte("раз два три"),
 			wantErr: false,
 		},
 	}

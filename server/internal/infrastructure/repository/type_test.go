@@ -1,3 +1,5 @@
+//go:build unit
+
 package repository
 
 import (
@@ -15,210 +17,117 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGet(t *testing.T) {
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-	defer db.Close()
-
+func TestTypeGet(t *testing.T) {
 	testUUID := uuid.New()
 
-	rows := sqlmock.
-		NewRows([]string{"id", "name"}).
-		AddRow(testUUID, "qwerty")
-	query := mock.ExpectQuery(regexp.QuoteMeta("SELECT id, name FROM types WHERE id = $1"))
-	query.WithArgs(testUUID).WillReturnRows(rows)
+	t.Run("success", func(t *testing.T) {
+		db, mock, err := sqlmock.New()
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		}
+		defer db.Close()
 
-	type args struct {
-		ID uuid.UUID
-	}
-	tests := []struct {
-		name string
-		args args
-		want *entity.Type
-	}{
-		{
-			"success",
-			args{
-				ID: testUUID,
-			},
-			&entity.Type{
-				ID:   testUUID,
-				Name: "qwerty",
-			},
-		},
-	}
+		want := &entity.Type{
+			ID:   testUUID,
+			Name: "qwerty",
+		}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			repository := NewTypeRepository(&adapter.Transactor{DB: db})
-			got, err := repository.Get(context.Background(), tt.args.ID)
-			require.Nil(t, err)
-			if tt.want != nil {
-				require.NotNil(t, got)
-				assert.Equal(t, tt.want.Name, got.Name)
-			}
+		mock.
+			ExpectQuery(regexp.QuoteMeta("SELECT id, name FROM types WHERE id = $1")).
+			WithArgs(want.ID).
+			WillReturnRows(sqlmock.
+				NewRows([]string{"id", "name"}).
+				AddRow(want.ID, "qwerty"),
+			)
 
-			if err := mock.ExpectationsWereMet(); err != nil {
-				t.Errorf("there were unfulfilled expectations: %s", err)
-			}
-		})
-	}
+		repository := NewTypeRepository(&adapter.Transactor{DB: db})
+		got, err := repository.Get(context.Background(), want.ID)
+		require.Nil(t, err)
+		require.NotNil(t, got)
+		assert.Equal(t, want.Name, got.Name)
+
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("there were unfulfilled expectations: %s", err)
+		}
+	})
+
+	t.Run("fail", func(t *testing.T) {
+		db, mock, err := sqlmock.New()
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		}
+		defer db.Close()
+
+		mock.
+			ExpectQuery(regexp.QuoteMeta("SELECT id, name FROM types WHERE id = $1")).
+			WithArgs(testUUID).
+			WillReturnError(sql.ErrNoRows)
+
+		repository := NewTypeRepository(&adapter.Transactor{DB: db})
+		_, err = repository.Get(context.Background(), testUUID)
+		require.NotNil(t, err)
+		assert.ErrorIs(t, err, usecase.ErrTypeNotFound)
+
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("there were unfulfilled expectations: %s", err)
+		}
+	})
+
 }
 
-func TestGetFail(t *testing.T) {
+func TestTypeAdd(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 	defer db.Close()
 
-	testUUID := uuid.New()
-
-	query := mock.ExpectQuery(regexp.QuoteMeta("SELECT id, name FROM types WHERE id = $1"))
-	query.WithArgs(testUUID).WillReturnError(sql.ErrNoRows)
-
-	type args struct {
-		ID uuid.UUID
-	}
-	tests := []struct {
-		name    string
-		args    args
-		want    *entity.Type
-		wantErr error
-	}{
-		{
-			"fail",
-			args{
-				ID: testUUID,
-			},
-			nil,
-			usecase.ErrTypeNotFound,
-		},
+	arg := &entity.Type{
+		ID:   uuid.New(),
+		Name: "qwerty",
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			repository := NewTypeRepository(&adapter.Transactor{DB: db})
-			got, err := repository.Get(context.Background(), tt.args.ID)
-			if tt.want != nil {
-				require.NotNil(t, got)
-				assert.Equal(t, tt.want.Name, got.Name)
-			}
-
-			if tt.wantErr != nil {
-				assert.ErrorIs(t, err, tt.wantErr)
-			}
-
-			if err := mock.ExpectationsWereMet(); err != nil {
-				t.Errorf("there were unfulfilled expectations: %s", err)
-			}
-		})
-	}
-}
-
-func TestAdd(t *testing.T) {
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-	defer db.Close()
-
-	testUUID := uuid.New()
-
-	mock.ExpectExec(regexp.QuoteMeta("INSERT INTO types (id, name) VALUES ($1, $2)")).
-		WithArgs(testUUID, "qwerty").
+	mock.
+		ExpectExec(regexp.QuoteMeta("INSERT INTO types (id, name) VALUES ($1, $2)")).
+		WithArgs(arg.ID, arg.Name).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
-	type args struct {
-		tp *entity.Type
-	}
-	tests := []struct {
-		name    string
-		args    args
-		wantErr bool
-	}{
-		{
-			"success",
-			args{
-				tp: &entity.Type{
-					ID:   testUUID,
-					Name: "qwerty",
-				},
-			},
-			false,
-		},
-	}
+	repository := NewTypeRepository(&adapter.Transactor{DB: db})
+	err = repository.Add(context.Background(), arg)
+	assert.Nil(t, err)
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			repository := NewTypeRepository(&adapter.Transactor{DB: db})
-			err := repository.Add(context.Background(), tt.args.tp)
-			if tt.wantErr {
-				assert.NotNil(t, err)
-			} else {
-				assert.Nil(t, err)
-			}
-
-			if err := mock.ExpectationsWereMet(); err != nil {
-				t.Errorf("there were unfulfilled expectations: %s", err)
-			}
-		})
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
 }
 
-func TestChange(t *testing.T) {
+func TestTypeChange(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 	defer db.Close()
 
-	testUUID := uuid.New()
+	arg := &entity.Type{
+		ID:   uuid.New(),
+		Name: "qwerty",
+	}
 
-	mock.ExpectExec(regexp.QuoteMeta("UPDATE types SET name=$2 WHERE id=$1")).
-		WithArgs(testUUID, "qwerty").
+	mock.
+		ExpectExec(regexp.QuoteMeta("UPDATE types SET name=$2 WHERE id=$1")).
+		WithArgs(arg.ID, arg.Name).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
-	type args struct {
-		tp *entity.Type
-	}
-	tests := []struct {
-		name    string
-		args    args
-		wantErr bool
-	}{
-		{
-			"success",
-			args{
-				tp: &entity.Type{
-					ID:   testUUID,
-					Name: "qwerty",
-				},
-			},
-			false,
-		},
-	}
+	repository := NewTypeRepository(&adapter.Transactor{DB: db})
+	err = repository.Change(context.Background(), arg)
+	assert.Nil(t, err)
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			repository := NewTypeRepository(&adapter.Transactor{DB: db})
-			err := repository.Change(context.Background(), tt.args.tp)
-			if tt.wantErr {
-				assert.NotNil(t, err)
-			} else {
-				assert.Nil(t, err)
-			}
-
-			if err := mock.ExpectationsWereMet(); err != nil {
-				t.Errorf("there were unfulfilled expectations: %s", err)
-			}
-		})
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
 }
 
-func TestRemove(t *testing.T) {
+func TestTypeRemove(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -227,38 +136,16 @@ func TestRemove(t *testing.T) {
 
 	testUUID := uuid.New()
 
-	mock.ExpectExec(regexp.QuoteMeta("DELETE FROM types WHERE id=$1")).
+	mock.
+		ExpectExec(regexp.QuoteMeta("DELETE FROM types WHERE id=$1")).
 		WithArgs(testUUID).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
-	type args struct {
-		ID uuid.UUID
-	}
-	tests := []struct {
-		name    string
-		args    args
-		wantErr bool
-	}{
-		{
-			"success",
-			args{
-				ID: testUUID,
-			},
-			false,
-		},
-	}
+	repository := NewTypeRepository(&adapter.Transactor{DB: db})
+	err = repository.Remove(context.Background(), testUUID)
+	assert.Nil(t, err)
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			repository := NewTypeRepository(&adapter.Transactor{DB: db})
-			err := repository.Remove(context.Background(), tt.args.ID)
-			if tt.wantErr {
-				assert.NotNil(t, err)
-			}
-
-			if err := mock.ExpectationsWereMet(); err != nil {
-				t.Errorf("there were unfulfilled expectations: %s", err)
-			}
-		})
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
 }
