@@ -26,9 +26,54 @@ func (e EntryRepository) Get(ctx context.Context, entryID uuid.UUID) (*entity.En
 	var updatedAt time.Time
 
 	err := e.tx.QueryRowContext(ctx,
-		"SELECT user_id, type_id, name, metadata, data, created_at, updated_at FROM entries WHERE id = $1",
+		"SELECT id, user_id, type_id, name, metadata, data, created_at, updated_at FROM entries WHERE id = $1",
 		entryID,
-	).Scan(&entry.UserID, &entry.TypeID, &entry.Name, &entry.Metadata, &entry.Data, &entry.CreatedAt, &entry.UpdatedAt)
+	).Scan(
+		&entry.ID,
+		&entry.UserID,
+		&entry.TypeID,
+		&entry.Name,
+		&entry.Metadata,
+		&entry.Data,
+		&entry.CreatedAt,
+		&entry.UpdatedAt,
+	)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, usecase.ErrEntryNotFound
+		}
+		return nil, err
+	}
+
+	entry.CreatedAt = &createdAt
+	entry.UpdatedAt = &updatedAt
+
+	return &entry, nil
+}
+
+func (e EntryRepository) GetOneWithUser(
+	ctx context.Context,
+	entryID uuid.UUID,
+	user *entity.User,
+) (*entity.Entry, error) {
+	var entry entity.Entry
+	var createdAt time.Time
+	var updatedAt time.Time
+
+	err := e.tx.QueryRowContext(ctx,
+		"SELECT id, user_id, type_id, name, metadata, data, created_at, updated_at "+
+			"FROM entries WHERE id = $1 AND user_id = $2",
+		entryID, user.ID,
+	).Scan(
+		&entry.ID,
+		&entry.UserID,
+		&entry.TypeID,
+		&entry.Name,
+		&entry.Metadata,
+		&entry.Data,
+		&entry.CreatedAt,
+		&entry.UpdatedAt,
+	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, usecase.ErrEntryNotFound

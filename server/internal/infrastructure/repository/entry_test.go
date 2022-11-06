@@ -96,6 +96,87 @@ func TestEntryGet(t *testing.T) {
 	})
 }
 
+func TestEntryGetOneWithUser(t *testing.T) {
+	testTime := time.Now()
+	testUser := &entity.User{
+		ID: uuid.New(),
+	}
+
+	want := &entity.Entry{
+		ID:        uuid.New(),
+		UserID:    testUser.ID,
+		TypeID:    uuid.New(),
+		Name:      "qwerty",
+		Metadata:  "test metadata",
+		Data:      []byte("test data"),
+		CreatedAt: &testTime,
+		UpdatedAt: &testTime,
+	}
+
+	t.Run("success", func(t *testing.T) {
+		db, mock, err := sqlmock.New()
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		}
+		defer db.Close()
+
+		mock.
+			ExpectQuery(
+				regexp.QuoteMeta("SELECT id, user_id, type_id, name, metadata, data, created_at, updated_at "+
+					"FROM entries WHERE id = $1 AND user_id = $2"),
+			).
+			WithArgs(want.ID, want.UserID).
+			WillReturnRows(sqlmock.
+				NewRows([]string{"id", "user_id", "type_id", "name", "metadata", "data", "created_at", "updated_at"}).
+				AddRow(
+					want.ID,
+					want.UserID,
+					want.TypeID,
+					want.Name,
+					want.Metadata,
+					want.Data,
+					want.CreatedAt,
+					want.UpdatedAt,
+				),
+			)
+
+		repository := NewEntryRepository(&adapter.Transactor{DB: db})
+		got, err := repository.GetOneWithUser(context.Background(), want.ID, testUser)
+		require.Nil(t, err)
+		require.NotNil(t, got)
+		assert.Equal(t, want.Name, got.Name)
+
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("there were unfulfilled expectations: %s", err)
+		}
+	})
+
+	t.Run("fail", func(t *testing.T) {
+		db, mock, err := sqlmock.New()
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		}
+		defer db.Close()
+
+		mock.
+			ExpectQuery(
+				regexp.QuoteMeta("SELECT id, user_id, type_id, name, metadata, data, created_at, updated_at "+
+					"FROM entries WHERE id = $1 AND user_id = $2"),
+			).
+			WithArgs(want.ID, want.UserID).
+			WillReturnError(sql.ErrNoRows)
+
+		repository := NewEntryRepository(&adapter.Transactor{DB: db})
+		_, err = repository.GetOneWithUser(context.Background(), want.ID, testUser)
+		assert.ErrorIs(t, err, usecase.ErrEntryNotFound)
+
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("there were unfulfilled expectations: %s", err)
+		}
+
+	})
+}
+
 func TestEntryGetAllByUser(t *testing.T) {
 	userUUID := uuid.New()
 	testTime := time.Now()

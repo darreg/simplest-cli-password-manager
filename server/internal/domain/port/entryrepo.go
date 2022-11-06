@@ -11,6 +11,10 @@ type EntryGetter interface {
 	Get(ctx context.Context, entryID uuid.UUID) (*entity.Entry, error)
 }
 
+type EntryOneWithUserGetter interface {
+	GetOneWithUser(ctx context.Context, entryID uuid.UUID, user *entity.User) (*entity.Entry, error)
+}
+
 type EntryAllByUserGetter interface {
 	GetAllByUser(ctx context.Context, user *entity.User) ([]*entity.Entry, error)
 }
@@ -29,6 +33,7 @@ type EntryRemover interface {
 
 type EntryRepository interface {
 	EntryGetter
+	EntryOneWithUserGetter
 	EntryAllByUserGetter
 	EntryAdder
 	EntryChanger
