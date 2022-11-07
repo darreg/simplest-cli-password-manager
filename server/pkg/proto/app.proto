@@ -73,6 +73,7 @@ message GetAllTypesResponse {
   message Type {
     string type_id = 1;
     string name = 2;
+    bool is_binary = 3;
   }
 
   repeated Type types = 1;

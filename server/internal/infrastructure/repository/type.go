@@ -23,8 +23,8 @@ func (t TypeRepository) Get(ctx context.Context, tpID uuid.UUID) (*entity.Type, 
 	var tp entity.Type
 
 	err := t.tx.QueryRowContext(ctx,
-		"SELECT id, name FROM types WHERE id = $1", tpID,
-	).Scan(&tp.ID, &tp.Name)
+		"SELECT id, name, is_binary FROM types WHERE id = $1", tpID,
+	).Scan(&tp.ID, &tp.Name, &tp.IsBinary)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, usecase.ErrTypeNotFound
@@ -37,8 +37,8 @@ func (t TypeRepository) Get(ctx context.Context, tpID uuid.UUID) (*entity.Type, 
 
 func (t TypeRepository) Add(ctx context.Context, tp *entity.Type) error {
 	_, err := t.tx.ExecContext(ctx,
-		"INSERT INTO types (id, name) VALUES ($1, $2)",
-		tp.ID, tp.Name)
+		"INSERT INTO types (id, name, is_binary) VALUES ($1, $2, $3)",
+		tp.ID, tp.Name, tp.IsBinary)
 	if err != nil {
 		return err
 	}
@@ -48,8 +48,8 @@ func (t TypeRepository) Add(ctx context.Context, tp *entity.Type) error {
 
 func (t TypeRepository) Change(ctx context.Context, tp *entity.Type) error {
 	_, err := t.tx.ExecContext(ctx,
-		"UPDATE types SET name=$2 WHERE id=$1",
-		tp.ID, tp.Name)
+		"UPDATE types SET name=$2, is_binary=$3 WHERE id=$1",
+		tp.ID, tp.Name, tp.IsBinary)
 	if err != nil {
 		return err
 	}

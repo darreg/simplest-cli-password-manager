@@ -33,11 +33,11 @@ func TestTypeGet(t *testing.T) {
 		}
 
 		mock.
-			ExpectQuery(regexp.QuoteMeta("SELECT id, name FROM types WHERE id = $1")).
+			ExpectQuery(regexp.QuoteMeta("SELECT id, name, is_binary FROM types WHERE id = $1")).
 			WithArgs(want.ID).
 			WillReturnRows(sqlmock.
-				NewRows([]string{"id", "name"}).
-				AddRow(want.ID, "qwerty"),
+				NewRows([]string{"id", "name", "is_binary"}).
+				AddRow(want.ID, "qwerty", false),
 			)
 
 		repository := NewTypeRepository(&adapter.Transactor{DB: db})
@@ -59,7 +59,7 @@ func TestTypeGet(t *testing.T) {
 		defer db.Close()
 
 		mock.
-			ExpectQuery(regexp.QuoteMeta("SELECT id, name FROM types WHERE id = $1")).
+			ExpectQuery(regexp.QuoteMeta("SELECT id, name, is_binary FROM types WHERE id = $1")).
 			WithArgs(testUUID).
 			WillReturnError(sql.ErrNoRows)
 
@@ -88,8 +88,8 @@ func TestTypeAdd(t *testing.T) {
 	}
 
 	mock.
-		ExpectExec(regexp.QuoteMeta("INSERT INTO types (id, name) VALUES ($1, $2)")).
-		WithArgs(arg.ID, arg.Name).
+		ExpectExec(regexp.QuoteMeta("INSERT INTO types (id, name, is_binary) VALUES ($1, $2, $3)")).
+		WithArgs(arg.ID, arg.Name, arg.IsBinary).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
 	repository := NewTypeRepository(&adapter.Transactor{DB: db})
@@ -114,8 +114,8 @@ func TestTypeChange(t *testing.T) {
 	}
 
 	mock.
-		ExpectExec(regexp.QuoteMeta("UPDATE types SET name=$2 WHERE id=$1")).
-		WithArgs(arg.ID, arg.Name).
+		ExpectExec(regexp.QuoteMeta("UPDATE types SET name=$2, is_binary=$3 WHERE id=$1")).
+		WithArgs(arg.ID, arg.Name, arg.IsBinary).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
 	repository := NewTypeRepository(&adapter.Transactor{DB: db})
