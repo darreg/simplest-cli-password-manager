@@ -15,7 +15,7 @@ func SessionValidate(
 	encryptedSessionKey string,
 	sessionLifeTime string,
 	decryptor port.Decryptor,
-	sessionGetter port.SessionGetter,
+	sessionRepository port.SessionGetter,
 ) (*entity.Session, error) {
 	if encryptedSessionKey == "" {
 		return nil, ErrInvalidSessionKey
@@ -31,7 +31,7 @@ func SessionValidate(
 		return nil, ErrInternalServerError
 	}
 
-	session, err := sessionGetter.Get(ctx, sessionID)
+	session, err := sessionRepository.Get(ctx, sessionID)
 	if err != nil {
 		if errors.Is(err, ErrSessionNotFound) {
 			return nil, ErrNotAuthenticated

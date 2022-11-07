@@ -24,10 +24,11 @@ const _ = grpc.SupportPackageIsVersion7
 type AppClient interface {
 	Registration(ctx context.Context, in *RegistrationRequest, opts ...grpc.CallOption) (*RegistrationResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
-	Set(ctx context.Context, in *SetRequest, opts ...grpc.CallOption) (*SetResponse, error)
-	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
-	GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
-	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
+	SetEntry(ctx context.Context, in *SetEntryRequest, opts ...grpc.CallOption) (*SetEntryResponse, error)
+	GetEntry(ctx context.Context, in *GetEntryRequest, opts ...grpc.CallOption) (*GetEntryResponse, error)
+	GetAllEntries(ctx context.Context, in *GetAllEntriesRequest, opts ...grpc.CallOption) (*GetAllEntriesResponse, error)
+	GetAllTypes(ctx context.Context, in *GetAllTypesRequest, opts ...grpc.CallOption) (*GetAllTypesResponse, error)
+	DeleteEntry(ctx context.Context, in *DeleteEntryRequest, opts ...grpc.CallOption) (*DeleteEntryResponse, error)
 }
 
 type appClient struct {
@@ -56,36 +57,45 @@ func (c *appClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.Ca
 	return out, nil
 }
 
-func (c *appClient) Set(ctx context.Context, in *SetRequest, opts ...grpc.CallOption) (*SetResponse, error) {
-	out := new(SetResponse)
-	err := c.cc.Invoke(ctx, "/proto.App/Set", in, out, opts...)
+func (c *appClient) SetEntry(ctx context.Context, in *SetEntryRequest, opts ...grpc.CallOption) (*SetEntryResponse, error) {
+	out := new(SetEntryResponse)
+	err := c.cc.Invoke(ctx, "/proto.App/SetEntry", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *appClient) Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
-	out := new(GetResponse)
-	err := c.cc.Invoke(ctx, "/proto.App/Get", in, out, opts...)
+func (c *appClient) GetEntry(ctx context.Context, in *GetEntryRequest, opts ...grpc.CallOption) (*GetEntryResponse, error) {
+	out := new(GetEntryResponse)
+	err := c.cc.Invoke(ctx, "/proto.App/GetEntry", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *appClient) GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
-	out := new(GetAllResponse)
-	err := c.cc.Invoke(ctx, "/proto.App/GetAll", in, out, opts...)
+func (c *appClient) GetAllEntries(ctx context.Context, in *GetAllEntriesRequest, opts ...grpc.CallOption) (*GetAllEntriesResponse, error) {
+	out := new(GetAllEntriesResponse)
+	err := c.cc.Invoke(ctx, "/proto.App/GetAllEntries", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *appClient) Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
-	out := new(DeleteResponse)
-	err := c.cc.Invoke(ctx, "/proto.App/Delete", in, out, opts...)
+func (c *appClient) GetAllTypes(ctx context.Context, in *GetAllTypesRequest, opts ...grpc.CallOption) (*GetAllTypesResponse, error) {
+	out := new(GetAllTypesResponse)
+	err := c.cc.Invoke(ctx, "/proto.App/GetAllTypes", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appClient) DeleteEntry(ctx context.Context, in *DeleteEntryRequest, opts ...grpc.CallOption) (*DeleteEntryResponse, error) {
+	out := new(DeleteEntryResponse)
+	err := c.cc.Invoke(ctx, "/proto.App/DeleteEntry", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -98,10 +108,11 @@ func (c *appClient) Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.
 type AppServer interface {
 	Registration(context.Context, *RegistrationRequest) (*RegistrationResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
-	Set(context.Context, *SetRequest) (*SetResponse, error)
-	Get(context.Context, *GetRequest) (*GetResponse, error)
-	GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error)
-	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
+	SetEntry(context.Context, *SetEntryRequest) (*SetEntryResponse, error)
+	GetEntry(context.Context, *GetEntryRequest) (*GetEntryResponse, error)
+	GetAllEntries(context.Context, *GetAllEntriesRequest) (*GetAllEntriesResponse, error)
+	GetAllTypes(context.Context, *GetAllTypesRequest) (*GetAllTypesResponse, error)
+	DeleteEntry(context.Context, *DeleteEntryRequest) (*DeleteEntryResponse, error)
 	mustEmbedUnimplementedAppServer()
 }
 
@@ -115,17 +126,20 @@ func (UnimplementedAppServer) Registration(context.Context, *RegistrationRequest
 func (UnimplementedAppServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedAppServer) Set(context.Context, *SetRequest) (*SetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Set not implemented")
+func (UnimplementedAppServer) SetEntry(context.Context, *SetEntryRequest) (*SetEntryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetEntry not implemented")
 }
-func (UnimplementedAppServer) Get(context.Context, *GetRequest) (*GetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+func (UnimplementedAppServer) GetEntry(context.Context, *GetEntryRequest) (*GetEntryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEntry not implemented")
 }
-func (UnimplementedAppServer) GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
+func (UnimplementedAppServer) GetAllEntries(context.Context, *GetAllEntriesRequest) (*GetAllEntriesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllEntries not implemented")
 }
-func (UnimplementedAppServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+func (UnimplementedAppServer) GetAllTypes(context.Context, *GetAllTypesRequest) (*GetAllTypesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllTypes not implemented")
+}
+func (UnimplementedAppServer) DeleteEntry(context.Context, *DeleteEntryRequest) (*DeleteEntryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteEntry not implemented")
 }
 func (UnimplementedAppServer) mustEmbedUnimplementedAppServer() {}
 
@@ -176,74 +190,92 @@ func _App_Login_Handler(srv interface{}, ctx context.Context, dec func(interface
 	return interceptor(ctx, in, info, handler)
 }
 
-func _App_Set_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SetRequest)
+func _App_SetEntry_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetEntryRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AppServer).Set(ctx, in)
+		return srv.(AppServer).SetEntry(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto.App/Set",
+		FullMethod: "/proto.App/SetEntry",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AppServer).Set(ctx, req.(*SetRequest))
+		return srv.(AppServer).SetEntry(ctx, req.(*SetEntryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _App_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetRequest)
+func _App_GetEntry_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetEntryRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AppServer).Get(ctx, in)
+		return srv.(AppServer).GetEntry(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto.App/Get",
+		FullMethod: "/proto.App/GetEntry",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AppServer).Get(ctx, req.(*GetRequest))
+		return srv.(AppServer).GetEntry(ctx, req.(*GetEntryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _App_GetAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAllRequest)
+func _App_GetAllEntries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllEntriesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AppServer).GetAll(ctx, in)
+		return srv.(AppServer).GetAllEntries(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto.App/GetAll",
+		FullMethod: "/proto.App/GetAllEntries",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AppServer).GetAll(ctx, req.(*GetAllRequest))
+		return srv.(AppServer).GetAllEntries(ctx, req.(*GetAllEntriesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _App_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteRequest)
+func _App_GetAllTypes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllTypesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AppServer).Delete(ctx, in)
+		return srv.(AppServer).GetAllTypes(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto.App/Delete",
+		FullMethod: "/proto.App/GetAllTypes",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AppServer).Delete(ctx, req.(*DeleteRequest))
+		return srv.(AppServer).GetAllTypes(ctx, req.(*GetAllTypesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _App_DeleteEntry_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteEntryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppServer).DeleteEntry(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.App/DeleteEntry",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppServer).DeleteEntry(ctx, req.(*DeleteEntryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -264,20 +296,24 @@ var App_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _App_Login_Handler,
 		},
 		{
-			MethodName: "Set",
-			Handler:    _App_Set_Handler,
+			MethodName: "SetEntry",
+			Handler:    _App_SetEntry_Handler,
 		},
 		{
-			MethodName: "Get",
-			Handler:    _App_Get_Handler,
+			MethodName: "GetEntry",
+			Handler:    _App_GetEntry_Handler,
 		},
 		{
-			MethodName: "GetAll",
-			Handler:    _App_GetAll_Handler,
+			MethodName: "GetAllEntries",
+			Handler:    _App_GetAllEntries_Handler,
 		},
 		{
-			MethodName: "Delete",
-			Handler:    _App_Delete_Handler,
+			MethodName: "GetAllTypes",
+			Handler:    _App_GetAllTypes_Handler,
+		},
+		{
+			MethodName: "DeleteEntry",
+			Handler:    _App_DeleteEntry_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

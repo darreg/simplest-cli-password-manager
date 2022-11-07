@@ -14,8 +14,8 @@ import (
 
 func TestGetEntry(t *testing.T) {
 	type m struct {
-		entryGetter *mocks.EntryOneWithUserGetter
-		userGetter  *mocks.UserGetter
+		entryRepository *mocks.EntryOneWithUserGetter
+		userRepository  *mocks.UserGetter
 	}
 
 	testUserID := uuid.New()
@@ -172,8 +172,8 @@ func TestGetEntry(t *testing.T) {
 			entry, err := GetEntry(
 				tt.args.ctx,
 				tt.args.requestedEntryID,
-				m.entryGetter,
-				m.userGetter,
+				m.entryRepository,
+				m.userRepository,
 			)
 
 			if tt.wantErr != nil {

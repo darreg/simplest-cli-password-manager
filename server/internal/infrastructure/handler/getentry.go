@@ -11,8 +11,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// Get returns an Entry.
-func (c *Collection) Get(ctx context.Context, in *proto.GetRequest) (*proto.GetResponse, error) {
+// GetEntry returns an Entry.
+func (c *Collection) GetEntry(ctx context.Context, in *proto.GetEntryRequest) (*proto.GetEntryResponse, error) {
 	entry, err := usecase.GetEntry(ctx, in.EntryId, c.a.EntryRepository, c.a.UserRepository)
 	if err != nil {
 		switch {
@@ -23,7 +23,7 @@ func (c *Collection) Get(ctx context.Context, in *proto.GetRequest) (*proto.GetR
 		}
 	}
 
-	return &proto.GetResponse{
+	return &proto.GetEntryResponse{
 		EntryId:   entry.ID.String(),
 		TypeId:    entry.TypeID.String(),
 		Name:      entry.Name,

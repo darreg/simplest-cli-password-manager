@@ -24,20 +24,20 @@ message LoginResponse {
   string encrypted_session_key = 1;
 }
 
-message SetRequest {
+message SetEntryRequest {
   string type_id = 1;
   string name = 2;
   string metadata = 3;
   bytes data = 4;
 }
 
-message SetResponse {}
+message SetEntryResponse {}
 
-message GetRequest {
+message GetEntryRequest {
   string entry_id = 1;
 }
 
-message GetResponse {
+message GetEntryResponse {
   string entry_id = 1;
   string type_id = 2;
   string name = 3;
@@ -47,9 +47,9 @@ message GetResponse {
   google.protobuf.Timestamp updated_at = 7;
 }
 
-message GetAllRequest {}
+message GetAllEntriesRequest {}
 
-message GetAllResponse {
+message GetAllEntriesResponse {
   message Entry {
     string entry_id = 1;
     string type_id = 2;
@@ -61,11 +61,11 @@ message GetAllResponse {
   repeated Entry entries = 1;
 }
 
-message DeleteRequest {
+message DeleteEntryRequest {
   string entry_id = 1;
 }
 
-message DeleteResponse {}
+message DeleteEntryResponse {}
 
 message GetAllTypesRequest {}
 
@@ -82,8 +82,9 @@ message GetAllTypesResponse {
 service App {
   rpc Registration(RegistrationRequest) returns (RegistrationResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
-  rpc Set(SetRequest) returns (SetResponse);
-  rpc Get(GetRequest) returns (GetResponse);
-  rpc GetAll(GetAllRequest) returns (GetAllResponse);
-  rpc Delete(DeleteRequest) returns (DeleteResponse);
+  rpc SetEntry(SetEntryRequest) returns (SetEntryResponse);
+  rpc GetEntry(GetEntryRequest) returns (GetEntryResponse);
+  rpc GetAllEntries(GetAllEntriesRequest) returns (GetAllEntriesResponse);
+  rpc GetAllTypes(GetAllTypesRequest) returns (GetAllTypesResponse);
+  rpc DeleteEntry(DeleteEntryRequest) returns (DeleteEntryResponse);
 }

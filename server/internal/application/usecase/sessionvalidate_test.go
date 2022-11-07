@@ -16,8 +16,8 @@ import (
 
 func TestSessionValidate(t *testing.T) {
 	type m struct {
-		decryptor     *mocks.Decryptor
-		sessionGetter *mocks.SessionGetter
+		decryptor         *mocks.Decryptor
+		sessionRepository *mocks.SessionGetter
 	}
 
 	type args struct {
@@ -242,7 +242,7 @@ func TestSessionValidate(t *testing.T) {
 				tt.args.encryptedSessionKey,
 				tt.args.sessionLifeTime,
 				m.decryptor,
-				m.sessionGetter,
+				m.sessionRepository,
 			)
 
 			if tt.wantErr != nil {

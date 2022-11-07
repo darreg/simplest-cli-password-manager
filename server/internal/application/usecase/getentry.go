@@ -11,8 +11,8 @@ import (
 func GetEntry(
 	ctx context.Context,
 	requestedEntryID string,
-	entryGetter port.EntryOneWithUserGetter,
-	userGetter port.UserGetter,
+	entryRepository port.EntryOneWithUserGetter,
+	userRepository port.UserGetter,
 ) (*entity.Entry, error) {
 	contextSession := ctx.Value(port.SessionContextKey)
 	session, ok := contextSession.(*entity.Session)
@@ -20,7 +20,7 @@ func GetEntry(
 		return nil, ErrIncorrectSession
 	}
 
-	user, err := userGetter.Get(ctx, session.UserID)
+	user, err := userRepository.Get(ctx, session.UserID)
 	if err != nil {
 		return nil, ErrUserNotFound
 	}
@@ -30,7 +30,7 @@ func GetEntry(
 		return nil, ErrInvalidArgument
 	}
 
-	entry, err := entryGetter.GetOneWithUser(ctx, entryID, user)
+	entry, err := entryRepository.GetOneWithUser(ctx, entryID, user)
 	if err != nil {
 		return nil, err
 	}
