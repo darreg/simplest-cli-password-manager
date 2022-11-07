@@ -3,10 +3,10 @@ package usecase
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/alrund/yp-2-project/server/internal/domain/entity"
 	"github.com/alrund/yp-2-project/server/internal/domain/port"
-	"github.com/google/uuid"
 )
 
 type RegistrationData struct {
@@ -17,27 +17,31 @@ type RegistrationData struct {
 func Registration(
 	ctx context.Context,
 	regData RegistrationData,
-	userRepository port.UserRegistrator,
 	hasher port.PasswordHasher,
-) (*entity.User, error) {
+	userRepository port.UserRegistrator,
+	sessionRepository port.SessionAdder,
+) (*entity.Session, error) {
 	user, err := userRepository.GetByLogin(ctx, regData.Login)
 	if err != nil && !errors.Is(err, ErrUserNotFound) {
-		return nil, err
+		return nil, ErrInternalServerError
 	}
 
 	if user != nil {
 		return nil, ErrLoginAlreadyUse
 	}
 
-	user = &entity.User{
-		ID:           uuid.New(),
-		Login:        regData.Login,
-		PasswordHash: hasher.Hash(regData.Password),
-	}
+	user = entity.NewUser(regData.Login, hasher.Hash(regData.Password))
 	err = userRepository.Add(ctx, user)
 	if err != nil {
-		return nil, err
+		return nil, ErrInternalServerError
 	}
 
-	return user, nil
+	nowTime := time.Now()
+	session := entity.NewSession(user.ID, &nowTime, &nowTime)
+	err = sessionRepository.Add(ctx, session)
+	if err != nil {
+		return nil, ErrInternalServerError
+	}
+
+	return session, nil
 }

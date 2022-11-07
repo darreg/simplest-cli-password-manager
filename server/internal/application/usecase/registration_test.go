@@ -5,19 +5,19 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"testing"
-
 	"github.com/alrund/yp-2-project/server/internal/domain/entity"
 	"github.com/alrund/yp-2-project/server/mocks"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"testing"
 )
 
 func TestRegistration(t *testing.T) {
 	type m struct {
-		userRegistrator *mocks.UserRegistrator
-		hasher          *mocks.PasswordHasher
+		hasher            *mocks.PasswordHasher
+		userRegistrator   *mocks.UserRegistrator
+		sessionRepository *mocks.SessionAdder
 	}
 
 	type args struct {
@@ -42,6 +42,11 @@ func TestRegistration(t *testing.T) {
 			},
 			nil,
 			func(a *args) *m {
+				passwordHasher := mocks.NewPasswordHasher(t)
+				passwordHasher.EXPECT().
+					Hash(a.regData.Password).
+					Return("zzz")
+
 				userRegistrator := mocks.NewUserRegistrator(t)
 				userRegistrator.EXPECT().
 					GetByLogin(a.ctx, a.regData.Login).
@@ -51,15 +56,38 @@ func TestRegistration(t *testing.T) {
 					Return(nil).
 					Once()
 
-				passwordHasher := mocks.NewPasswordHasher(t)
-				passwordHasher.EXPECT().
-					Hash(a.regData.Password).
-					Return("zzz")
+				sessionRepository := mocks.NewSessionAdder(t)
+				sessionRepository.EXPECT().
+					Add(a.ctx, mock.AnythingOfType("*entity.Session")).
+					Return(nil).
+					Once()
 
-				return &m{userRegistrator, passwordHasher}
+				return &m{passwordHasher, userRegistrator, sessionRepository}
 			},
 		},
+		{
+			"fail with user repository get unexpected error",
+			&args{
+				context.Background(),
+				RegistrationData{
+					Login:    "login",
+					Password: "password",
+				},
+			},
+			ErrInternalServerError,
+			func(a *args) *m {
+				passwordHasher := mocks.NewPasswordHasher(t)
 
+				userRegistrator := mocks.NewUserRegistrator(t)
+				userRegistrator.EXPECT().
+					GetByLogin(a.ctx, a.regData.Login).
+					Return(nil, fmt.Errorf("test error"))
+
+				sessionRepository := mocks.NewSessionAdder(t)
+
+				return &m{passwordHasher, userRegistrator, sessionRepository}
+			},
+		},
 		{
 			"fail with login already use",
 			&args{
@@ -71,25 +99,22 @@ func TestRegistration(t *testing.T) {
 			},
 			ErrLoginAlreadyUse,
 			func(a *args) *m {
+				passwordHasher := mocks.NewPasswordHasher(t)
+
 				userRegistrator := mocks.NewUserRegistrator(t)
 				userRegistrator.EXPECT().
 					GetByLogin(a.ctx, a.regData.Login).
-					Return(
-						&entity.User{
-							ID:           uuid.New(),
-							Login:        "other login",
-							PasswordHash: "other hash",
-						},
-						nil,
-					)
+					Return(&entity.User{
+						ID: uuid.New(),
+					}, nil)
 
-				passwordHasher := mocks.NewPasswordHasher(t)
+				sessionRepository := mocks.NewSessionAdder(t)
 
-				return &m{userRegistrator, passwordHasher}
+				return &m{passwordHasher, userRegistrator, sessionRepository}
 			},
 		},
 		{
-			"fail with other error",
+			"fail with user repository add unexpected error",
 			&args{
 				context.Background(),
 				RegistrationData{
@@ -97,19 +122,59 @@ func TestRegistration(t *testing.T) {
 					Password: "password",
 				},
 			},
-			fmt.Errorf("other error"),
+			ErrInternalServerError,
 			func(a *args) *m {
+				passwordHasher := mocks.NewPasswordHasher(t)
+				passwordHasher.EXPECT().
+					Hash(a.regData.Password).
+					Return("zzz")
+
 				userRegistrator := mocks.NewUserRegistrator(t)
 				userRegistrator.EXPECT().
 					GetByLogin(a.ctx, a.regData.Login).
-					Return(
-						nil,
-						fmt.Errorf("other error"),
-					)
+					Return(nil, ErrUserNotFound)
+				userRegistrator.EXPECT().
+					Add(a.ctx, mock.AnythingOfType("*entity.User")).
+					Return(fmt.Errorf("test error")).
+					Once()
 
+				sessionRepository := mocks.NewSessionAdder(t)
+
+				return &m{passwordHasher, userRegistrator, sessionRepository}
+			},
+		},
+		{
+			"fail with session repository unexpected error",
+			&args{
+				context.Background(),
+				RegistrationData{
+					Login:    "login",
+					Password: "password",
+				},
+			},
+			ErrInternalServerError,
+			func(a *args) *m {
 				passwordHasher := mocks.NewPasswordHasher(t)
+				passwordHasher.EXPECT().
+					Hash(a.regData.Password).
+					Return("zzz")
 
-				return &m{userRegistrator, passwordHasher}
+				userRegistrator := mocks.NewUserRegistrator(t)
+				userRegistrator.EXPECT().
+					GetByLogin(a.ctx, a.regData.Login).
+					Return(nil, ErrUserNotFound)
+				userRegistrator.EXPECT().
+					Add(a.ctx, mock.AnythingOfType("*entity.User")).
+					Return(nil).
+					Once()
+
+				sessionRepository := mocks.NewSessionAdder(t)
+				sessionRepository.EXPECT().
+					Add(a.ctx, mock.AnythingOfType("*entity.Session")).
+					Return(fmt.Errorf("test error")).
+					Once()
+
+				return &m{passwordHasher, userRegistrator, sessionRepository}
 			},
 		},
 	}
@@ -117,11 +182,12 @@ func TestRegistration(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			m := tt.mockPrepare(tt.args)
 
-			user, err := Registration(
+			session, err := Registration(
 				tt.args.ctx,
 				tt.args.regData,
-				m.userRegistrator,
 				m.hasher,
+				m.userRegistrator,
+				m.sessionRepository,
 			)
 
 			if tt.wantErr != nil {
@@ -129,7 +195,7 @@ func TestRegistration(t *testing.T) {
 				return
 			}
 			assert.NoError(t, err)
-			assert.Equal(t, tt.args.regData.Login, user.Login)
+			assert.NotNil(t, session)
 		})
 	}
 }
