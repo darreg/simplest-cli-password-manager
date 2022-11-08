@@ -13,7 +13,7 @@ import (
 
 // GetEntry returns an Entry.
 func (c *Collection) GetEntry(ctx context.Context, in *proto.GetEntryRequest) (*proto.GetEntryResponse, error) {
-	entry, err := usecase.GetEntry(ctx, in.EntryId, c.a.EntryRepository, c.a.UserRepository)
+	entry, err := usecase.GetEntry(ctx, in.EntryId, c.a.Encryptor, c.a.EntryRepository, c.a.UserRepository)
 	if err != nil {
 		switch {
 		case errors.Is(err, usecase.ErrEntryNotFound):
