@@ -18,30 +18,36 @@ func Registration(
 	ctx context.Context,
 	regData RegistrationData,
 	hasher port.PasswordHasher,
+	encryptor port.Encryptor,
 	userRepository port.UserRegistrator,
 	sessionRepository port.SessionAdder,
-) (*entity.Session, error) {
+) (string, error) {
 	user, err := userRepository.GetByLogin(ctx, regData.Login)
 	if err != nil && !errors.Is(err, ErrUserNotFound) {
-		return nil, ErrInternalServerError
+		return "", ErrInternalServerError
 	}
 
 	if user != nil {
-		return nil, ErrLoginAlreadyUse
+		return "", ErrLoginAlreadyUse
 	}
 
 	user = entity.NewUser(regData.Login, hasher.Hash(regData.Password))
 	err = userRepository.Add(ctx, user)
 	if err != nil {
-		return nil, ErrInternalServerError
+		return "", ErrInternalServerError
 	}
 
 	nowTime := time.Now()
 	session := entity.NewSession(user.ID, &nowTime, &nowTime)
 	err = sessionRepository.Add(ctx, session)
 	if err != nil {
-		return nil, ErrInternalServerError
+		return "", ErrInternalServerError
 	}
 
-	return session, nil
+	encryptedSessionKey, err := encryptor.Encrypt([]byte(session.ID.String()))
+	if err != nil {
+		return "", ErrInternalServerError
+	}
+
+	return encryptedSessionKey, nil
 }

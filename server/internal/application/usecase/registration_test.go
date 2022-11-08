@@ -16,9 +16,12 @@ import (
 func TestRegistration(t *testing.T) {
 	type m struct {
 		hasher            *mocks.PasswordHasher
+		encryptor         *mocks.Encryptor
 		userRegistrator   *mocks.UserRegistrator
 		sessionRepository *mocks.SessionAdder
 	}
+
+	testEncryptedSessionKey := "encrypted"
 
 	type args struct {
 		ctx     context.Context
@@ -62,7 +65,51 @@ func TestRegistration(t *testing.T) {
 					Return(nil).
 					Once()
 
-				return &m{passwordHasher, userRegistrator, sessionRepository}
+				encryptor := mocks.NewEncryptor(t)
+				encryptor.EXPECT().
+					Encrypt(mock.AnythingOfType("[]uint8")).
+					Return(testEncryptedSessionKey, nil)
+
+				return &m{passwordHasher, encryptor, userRegistrator, sessionRepository}
+			},
+		},
+		{
+			"fail with encryptor unexpected error",
+			&args{
+				context.Background(),
+				RegistrationData{
+					Login:    "login",
+					Password: "password",
+				},
+			},
+			ErrInternalServerError,
+			func(a *args) *m {
+				passwordHasher := mocks.NewPasswordHasher(t)
+				passwordHasher.EXPECT().
+					Hash(a.regData.Password).
+					Return("zzz")
+
+				userRegistrator := mocks.NewUserRegistrator(t)
+				userRegistrator.EXPECT().
+					GetByLogin(a.ctx, a.regData.Login).
+					Return(nil, ErrUserNotFound)
+				userRegistrator.EXPECT().
+					Add(a.ctx, mock.AnythingOfType("*entity.User")).
+					Return(nil).
+					Once()
+
+				sessionRepository := mocks.NewSessionAdder(t)
+				sessionRepository.EXPECT().
+					Add(a.ctx, mock.AnythingOfType("*entity.Session")).
+					Return(nil).
+					Once()
+
+				encryptor := mocks.NewEncryptor(t)
+				encryptor.EXPECT().
+					Encrypt(mock.AnythingOfType("[]uint8")).
+					Return("", fmt.Errorf("unexpected error"))
+
+				return &m{passwordHasher, encryptor, userRegistrator, sessionRepository}
 			},
 		},
 		{
@@ -85,7 +132,9 @@ func TestRegistration(t *testing.T) {
 
 				sessionRepository := mocks.NewSessionAdder(t)
 
-				return &m{passwordHasher, userRegistrator, sessionRepository}
+				encryptor := mocks.NewEncryptor(t)
+
+				return &m{passwordHasher, encryptor, userRegistrator, sessionRepository}
 			},
 		},
 		{
@@ -110,7 +159,9 @@ func TestRegistration(t *testing.T) {
 
 				sessionRepository := mocks.NewSessionAdder(t)
 
-				return &m{passwordHasher, userRegistrator, sessionRepository}
+				encryptor := mocks.NewEncryptor(t)
+
+				return &m{passwordHasher, encryptor, userRegistrator, sessionRepository}
 			},
 		},
 		{
@@ -140,7 +191,9 @@ func TestRegistration(t *testing.T) {
 
 				sessionRepository := mocks.NewSessionAdder(t)
 
-				return &m{passwordHasher, userRegistrator, sessionRepository}
+				encryptor := mocks.NewEncryptor(t)
+
+				return &m{passwordHasher, encryptor, userRegistrator, sessionRepository}
 			},
 		},
 		{
@@ -174,7 +227,9 @@ func TestRegistration(t *testing.T) {
 					Return(fmt.Errorf("test error")).
 					Once()
 
-				return &m{passwordHasher, userRegistrator, sessionRepository}
+				encryptor := mocks.NewEncryptor(t)
+
+				return &m{passwordHasher, encryptor, userRegistrator, sessionRepository}
 			},
 		},
 	}
@@ -186,6 +241,7 @@ func TestRegistration(t *testing.T) {
 				tt.args.ctx,
 				tt.args.regData,
 				m.hasher,
+				m.encryptor,
 				m.userRegistrator,
 				m.sessionRepository,
 			)

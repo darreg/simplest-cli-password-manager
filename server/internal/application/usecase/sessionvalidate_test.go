@@ -5,6 +5,8 @@ package usecase
 import (
 	"context"
 	"errors"
+	"fmt"
+	"github.com/stretchr/testify/mock"
 	"testing"
 	"time"
 
@@ -17,7 +19,7 @@ import (
 func TestSessionValidate(t *testing.T) {
 	type m struct {
 		decryptor         *mocks.Decryptor
-		sessionRepository *mocks.SessionGetter
+		sessionRepository *mocks.SessionRefresher
 	}
 
 	type args struct {
@@ -51,8 +53,8 @@ func TestSessionValidate(t *testing.T) {
 					Decrypt(a.encryptedSessionKey).
 					Return([]byte(sessionID.String()), nil)
 
-				sessionGetter := mocks.NewSessionGetter(t)
-				sessionGetter.EXPECT().
+				sessionRefresher := mocks.NewSessionRefresher(t)
+				sessionRefresher.EXPECT().
 					Get(a.ctx, sessionID).
 					Return(&entity.Session{
 						ID:           sessionID,
@@ -60,8 +62,45 @@ func TestSessionValidate(t *testing.T) {
 						LoginTime:    &testTime,
 						LastSeenTime: &testTime,
 					}, nil)
+				sessionRefresher.EXPECT().
+					Change(a.ctx, mock.AnythingOfType("*entity.Session")).
+					Return(nil)
 
-				return &m{decryptor, sessionGetter}
+				return &m{decryptor, sessionRefresher}
+			},
+		},
+		{
+			"fail with session repository unexpected error",
+			&args{
+				ctx:                 context.Background(),
+				encryptedSessionKey: "encrypted",
+				sessionLifeTime:     "1h",
+				userID:              uuid.New(),
+			},
+			ErrInternalServerError,
+			func(a *args) *m {
+				sessionID := uuid.New()
+				testTime := time.Now().Add(-time.Minute * 59)
+
+				decryptor := mocks.NewDecryptor(t)
+				decryptor.EXPECT().
+					Decrypt(a.encryptedSessionKey).
+					Return([]byte(sessionID.String()), nil)
+
+				sessionRefresher := mocks.NewSessionRefresher(t)
+				sessionRefresher.EXPECT().
+					Get(a.ctx, sessionID).
+					Return(&entity.Session{
+						ID:           sessionID,
+						UserID:       a.userID,
+						LoginTime:    &testTime,
+						LastSeenTime: &testTime,
+					}, nil)
+				sessionRefresher.EXPECT().
+					Change(a.ctx, mock.AnythingOfType("*entity.Session")).
+					Return(fmt.Errorf("unexpected error"))
+
+				return &m{decryptor, sessionRefresher}
 			},
 		},
 		{
@@ -82,8 +121,8 @@ func TestSessionValidate(t *testing.T) {
 					Decrypt(a.encryptedSessionKey).
 					Return([]byte(sessionID.String()), nil)
 
-				sessionGetter := mocks.NewSessionGetter(t)
-				sessionGetter.EXPECT().
+				sessionRefresher := mocks.NewSessionRefresher(t)
+				sessionRefresher.EXPECT().
 					Get(a.ctx, sessionID).
 					Return(&entity.Session{
 						ID:           sessionID,
@@ -92,7 +131,7 @@ func TestSessionValidate(t *testing.T) {
 						LastSeenTime: &testTime,
 					}, nil)
 
-				return &m{decryptor, sessionGetter}
+				return &m{decryptor, sessionRefresher}
 			},
 		},
 		{
@@ -106,9 +145,9 @@ func TestSessionValidate(t *testing.T) {
 			ErrInvalidSessionKey,
 			func(a *args) *m {
 				decryptor := mocks.NewDecryptor(t)
-				sessionGetter := mocks.NewSessionGetter(t)
+				sessionRefresher := mocks.NewSessionRefresher(t)
 
-				return &m{decryptor, sessionGetter}
+				return &m{decryptor, sessionRefresher}
 			},
 		},
 		{
@@ -124,11 +163,11 @@ func TestSessionValidate(t *testing.T) {
 				decryptor := mocks.NewDecryptor(t)
 				decryptor.EXPECT().
 					Decrypt(a.encryptedSessionKey).
-					Return([]byte{}, errors.New("fake error"))
+					Return([]byte{}, errors.New("unexpected error"))
 
-				sessionGetter := mocks.NewSessionGetter(t)
+				sessionRefresher := mocks.NewSessionRefresher(t)
 
-				return &m{decryptor, sessionGetter}
+				return &m{decryptor, sessionRefresher}
 			},
 		},
 		{
@@ -146,9 +185,9 @@ func TestSessionValidate(t *testing.T) {
 					Decrypt(a.encryptedSessionKey).
 					Return([]byte("incorrect"), nil)
 
-				sessionGetter := mocks.NewSessionGetter(t)
+				sessionRefresher := mocks.NewSessionRefresher(t)
 
-				return &m{decryptor, sessionGetter}
+				return &m{decryptor, sessionRefresher}
 			},
 		},
 		{
@@ -168,12 +207,12 @@ func TestSessionValidate(t *testing.T) {
 					Decrypt(a.encryptedSessionKey).
 					Return([]byte(sessionID.String()), nil)
 
-				sessionGetter := mocks.NewSessionGetter(t)
-				sessionGetter.EXPECT().
+				sessionRefresher := mocks.NewSessionRefresher(t)
+				sessionRefresher.EXPECT().
 					Get(a.ctx, sessionID).
 					Return(nil, ErrSessionNotFound)
 
-				return &m{decryptor, sessionGetter}
+				return &m{decryptor, sessionRefresher}
 			},
 		},
 		{
@@ -193,12 +232,12 @@ func TestSessionValidate(t *testing.T) {
 					Decrypt(a.encryptedSessionKey).
 					Return([]byte(sessionID.String()), nil)
 
-				sessionGetter := mocks.NewSessionGetter(t)
-				sessionGetter.EXPECT().
+				sessionRefresher := mocks.NewSessionRefresher(t)
+				sessionRefresher.EXPECT().
 					Get(a.ctx, sessionID).
 					Return(nil, errors.New("fake error"))
 
-				return &m{decryptor, sessionGetter}
+				return &m{decryptor, sessionRefresher}
 			},
 		},
 		{
@@ -219,8 +258,8 @@ func TestSessionValidate(t *testing.T) {
 					Decrypt(a.encryptedSessionKey).
 					Return([]byte(sessionID.String()), nil)
 
-				sessionGetter := mocks.NewSessionGetter(t)
-				sessionGetter.EXPECT().
+				sessionRefresher := mocks.NewSessionRefresher(t)
+				sessionRefresher.EXPECT().
 					Get(a.ctx, sessionID).
 					Return(&entity.Session{
 						ID:           sessionID,
@@ -229,7 +268,7 @@ func TestSessionValidate(t *testing.T) {
 						LastSeenTime: &testTime,
 					}, nil)
 
-				return &m{decryptor, sessionGetter}
+				return &m{decryptor, sessionRefresher}
 			},
 		},
 	}

@@ -18,15 +18,16 @@ func Login(
 	ctx context.Context,
 	cred Credential,
 	hasher port.PasswordHasher,
+	encryptor port.Encryptor,
 	userRepository port.UserByCredentialGetter,
 	sessionRepository port.SessionAdder,
-) (*entity.Session, error) {
+) (string, error) {
 	user, err := userRepository.GetByCredential(ctx, cred.Login, hasher.Hash(cred.Password))
 	if err != nil {
 		if errors.Is(err, ErrUserNotFound) {
-			return nil, ErrNotAuthenticated
+			return "", ErrNotAuthenticated
 		}
-		return nil, ErrInternalServerError
+		return "", ErrInternalServerError
 	}
 
 	loginTime := time.Now()
@@ -34,8 +35,13 @@ func Login(
 
 	err = sessionRepository.Add(ctx, session)
 	if err != nil {
-		return nil, ErrInternalServerError
+		return "", ErrInternalServerError
 	}
 
-	return session, nil
+	encryptedSessionKey, err := encryptor.Encrypt([]byte(session.ID.String()))
+	if err != nil {
+		return "", ErrInternalServerError
+	}
+
+	return encryptedSessionKey, nil
 }

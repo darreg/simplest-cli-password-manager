@@ -15,7 +15,7 @@ func SessionValidate(
 	encryptedSessionKey string,
 	sessionLifeTime string,
 	decryptor port.Decryptor,
-	sessionRepository port.SessionGetter,
+	sessionRepository port.SessionRefresher,
 ) (*entity.Session, error) {
 	if encryptedSessionKey == "" {
 		return nil, ErrInvalidSessionKey
@@ -46,6 +46,13 @@ func SessionValidate(
 
 	if session.LastSeenTime.Before(time.Now().Add(-duration)) {
 		return nil, ErrNotAuthenticated
+	}
+
+	nowTime := time.Now()
+	session.LastSeenTime = &nowTime
+	err = sessionRepository.Change(ctx, session)
+	if err != nil {
+		return nil, ErrInternalServerError
 	}
 
 	return session, nil

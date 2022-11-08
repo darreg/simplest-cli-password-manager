@@ -4,6 +4,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"github.com/alrund/yp-2-project/server/internal/domain/entity"
 	"github.com/alrund/yp-2-project/server/internal/domain/port"
 	"github.com/alrund/yp-2-project/server/mocks"
@@ -14,12 +15,14 @@ import (
 
 func TestGetEntry(t *testing.T) {
 	type m struct {
+		decryptor       *mocks.Decryptor
 		entryRepository *mocks.EntryOneWithUserGetter
 		userRepository  *mocks.UserGetter
 	}
 
 	testUserID := uuid.New()
 	testRequestedEntryUUID := uuid.New()
+	testData := []byte("тестовые данные")
 
 	type args struct {
 		ctx                context.Context
@@ -62,9 +65,15 @@ func TestGetEntry(t *testing.T) {
 					Return(&entity.Entry{
 						ID:     a.requestedEntryUUID,
 						UserID: testUser.ID,
+						Data:   testData,
 					}, nil)
 
-				return &m{entryGetter, userGetter}
+				decryptor := mocks.NewDecryptor(t)
+				decryptor.EXPECT().
+					Decrypt(string(testData)).
+					Return(testData, nil)
+
+				return &m{decryptor, entryGetter, userGetter}
 			},
 		},
 		{
@@ -80,8 +89,9 @@ func TestGetEntry(t *testing.T) {
 
 				userGetter := mocks.NewUserGetter(t)
 				entryGetter := mocks.NewEntryOneWithUserGetter(t)
+				decryptor := mocks.NewDecryptor(t)
 
-				return &m{entryGetter, userGetter}
+				return &m{decryptor, entryGetter, userGetter}
 			},
 		},
 		{
@@ -103,8 +113,9 @@ func TestGetEntry(t *testing.T) {
 					Get(a.ctx, a.userID).
 					Return(nil, ErrUserNotFound)
 				entryGetter := mocks.NewEntryOneWithUserGetter(t)
+				decryptor := mocks.NewDecryptor(t)
 
-				return &m{entryGetter, userGetter}
+				return &m{decryptor, entryGetter, userGetter}
 			},
 		},
 		{
@@ -130,8 +141,9 @@ func TestGetEntry(t *testing.T) {
 					Return(testUser, nil)
 
 				entryGetter := mocks.NewEntryOneWithUserGetter(t)
+				decryptor := mocks.NewDecryptor(t)
 
-				return &m{entryGetter, userGetter}
+				return &m{decryptor, entryGetter, userGetter}
 			},
 		},
 		{
@@ -161,7 +173,80 @@ func TestGetEntry(t *testing.T) {
 					GetOneWithUser(a.ctx, a.requestedEntryUUID, testUser).
 					Return(nil, ErrEntryNotFound)
 
-				return &m{entryGetter, userGetter}
+				decryptor := mocks.NewDecryptor(t)
+
+				return &m{decryptor, entryGetter, userGetter}
+			},
+		},
+		{
+			"fail with entry repository unexpected error",
+			&args{
+				ctx: context.WithValue(context.Background(), port.SessionContextKey, &entity.Session{
+					ID:     uuid.New(),
+					UserID: testUserID,
+				}),
+				requestedEntryUUID: testRequestedEntryUUID,
+				requestedEntryID:   testRequestedEntryUUID.String(),
+				userID:             testUserID,
+			},
+			ErrInternalServerError,
+			func(a *args) *m {
+				testUser := &entity.User{
+					ID: a.userID,
+				}
+
+				userGetter := mocks.NewUserGetter(t)
+				userGetter.EXPECT().
+					Get(a.ctx, a.userID).
+					Return(testUser, nil)
+
+				entryGetter := mocks.NewEntryOneWithUserGetter(t)
+				entryGetter.EXPECT().
+					GetOneWithUser(a.ctx, a.requestedEntryUUID, testUser).
+					Return(nil, fmt.Errorf("unexpected error"))
+
+				decryptor := mocks.NewDecryptor(t)
+
+				return &m{decryptor, entryGetter, userGetter}
+			},
+		},
+		{
+			"fail with decryption error",
+			&args{
+				ctx: context.WithValue(context.Background(), port.SessionContextKey, &entity.Session{
+					ID:     uuid.New(),
+					UserID: testUserID,
+				}),
+				requestedEntryUUID: testRequestedEntryUUID,
+				requestedEntryID:   testRequestedEntryUUID.String(),
+				userID:             testUserID,
+			},
+			ErrInternalServerError,
+			func(a *args) *m {
+				testUser := &entity.User{
+					ID: a.userID,
+				}
+
+				userGetter := mocks.NewUserGetter(t)
+				userGetter.EXPECT().
+					Get(a.ctx, a.userID).
+					Return(testUser, nil)
+
+				entryGetter := mocks.NewEntryOneWithUserGetter(t)
+				entryGetter.EXPECT().
+					GetOneWithUser(a.ctx, a.requestedEntryUUID, testUser).
+					Return(&entity.Entry{
+						ID:     a.requestedEntryUUID,
+						UserID: testUser.ID,
+						Data:   testData,
+					}, nil)
+
+				decryptor := mocks.NewDecryptor(t)
+				decryptor.EXPECT().
+					Decrypt(string(testData)).
+					Return(nil, fmt.Errorf("unexpected error"))
+
+				return &m{decryptor, entryGetter, userGetter}
 			},
 		},
 	}
@@ -172,6 +257,7 @@ func TestGetEntry(t *testing.T) {
 			entry, err := GetEntry(
 				tt.args.ctx,
 				tt.args.requestedEntryID,
+				m.decryptor,
 				m.entryRepository,
 				m.userRepository,
 			)

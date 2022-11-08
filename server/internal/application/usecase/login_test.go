@@ -16,12 +16,13 @@ import (
 func TestLogin(t *testing.T) {
 	type m struct {
 		hasher            *mocks.PasswordHasher
+		encryptor         *mocks.Encryptor
 		userRepository    *mocks.UserByCredentialGetter
 		sessionRepository *mocks.SessionAdder
 	}
 
 	testUserID := uuid.New()
-	testSession := &entity.Session{ID: uuid.New(), UserID: testUserID}
+	testEncryptedSessionKey := "encrypted"
 
 	type args struct {
 		ctx  context.Context
@@ -68,7 +69,54 @@ func TestLogin(t *testing.T) {
 					Return(nil).
 					Once()
 
-				return &m{passwordHasher, userRepository, sessionRepository}
+				encryptor := mocks.NewEncryptor(t)
+				encryptor.EXPECT().
+					Encrypt(mock.AnythingOfType("[]uint8")).
+					Return(testEncryptedSessionKey, nil)
+
+				return &m{passwordHasher, encryptor, userRepository, sessionRepository}
+			},
+		},
+		{
+			"fail with encryptor unexpected error",
+			&args{
+				context.Background(),
+				Credential{
+					Login:    "login",
+					Password: "password",
+				},
+			},
+			ErrInternalServerError,
+			func(a *args) *m {
+				passwordHasher := mocks.NewPasswordHasher(t)
+				passwordHasher.EXPECT().
+					Hash(a.cred.Password).
+					Return(a.cred.Password)
+
+				userRepository := mocks.NewUserByCredentialGetter(t)
+				userRepository.EXPECT().
+					GetByCredential(a.ctx, a.cred.Login, a.cred.Password).
+					Return(
+						&entity.User{
+							ID:           testUserID,
+							Login:        a.cred.Login,
+							PasswordHash: a.cred.Password,
+						},
+						nil,
+					)
+
+				sessionRepository := mocks.NewSessionAdder(t)
+				sessionRepository.EXPECT().
+					Add(a.ctx, mock.AnythingOfType("*entity.Session")).
+					Return(nil).
+					Once()
+
+				encryptor := mocks.NewEncryptor(t)
+				encryptor.EXPECT().
+					Encrypt(mock.AnythingOfType("[]uint8")).
+					Return("", fmt.Errorf("unexpected error"))
+
+				return &m{passwordHasher, encryptor, userRepository, sessionRepository}
 			},
 		},
 		{
@@ -94,7 +142,9 @@ func TestLogin(t *testing.T) {
 
 				sessionRepository := mocks.NewSessionAdder(t)
 
-				return &m{passwordHasher, userRepository, sessionRepository}
+				encryptor := mocks.NewEncryptor(t)
+
+				return &m{passwordHasher, encryptor, userRepository, sessionRepository}
 			},
 		},
 		{
@@ -120,7 +170,9 @@ func TestLogin(t *testing.T) {
 
 				sessionRepository := mocks.NewSessionAdder(t)
 
-				return &m{passwordHasher, userRepository, sessionRepository}
+				encryptor := mocks.NewEncryptor(t)
+
+				return &m{passwordHasher, encryptor, userRepository, sessionRepository}
 			},
 		},
 		{
@@ -156,7 +208,9 @@ func TestLogin(t *testing.T) {
 					Add(a.ctx, mock.AnythingOfType("*entity.Session")).
 					Return(fmt.Errorf("test error"))
 
-				return &m{passwordHasher, userRepository, sessionRepository}
+				encryptor := mocks.NewEncryptor(t)
+
+				return &m{passwordHasher, encryptor, userRepository, sessionRepository}
 			},
 		},
 	}
@@ -164,10 +218,11 @@ func TestLogin(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			m := tt.mockPrepare(tt.args)
 
-			session, err := Login(
+			encryptedSessionKey, err := Login(
 				tt.args.ctx,
 				tt.args.cred,
 				m.hasher,
+				m.encryptor,
 				m.userRepository,
 				m.sessionRepository,
 			)
@@ -177,7 +232,7 @@ func TestLogin(t *testing.T) {
 				return
 			}
 			assert.NoError(t, err)
-			assert.Equal(t, testSession.UserID, session.UserID)
+			assert.Equal(t, testEncryptedSessionKey, encryptedSessionKey)
 		})
 	}
 }
