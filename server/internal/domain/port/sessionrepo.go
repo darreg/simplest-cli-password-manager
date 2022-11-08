@@ -23,6 +23,11 @@ type SessionRemover interface {
 	Remove(ctx context.Context, sessionID uuid.UUID) error
 }
 
+type SessionRefresher interface {
+	SessionGetter
+	SessionChanger
+}
+
 type SessionRepository interface {
 	SessionGetter
 	SessionAdder
