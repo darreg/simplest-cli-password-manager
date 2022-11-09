@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"errors"
+
 	"github.com/alrund/yp-2-project/server/internal/application/usecase"
 	"github.com/alrund/yp-2-project/server/pkg/proto"
 	"google.golang.org/grpc/codes"
