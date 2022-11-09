@@ -11,6 +11,10 @@ type TypeGetter interface {
 	Get(ctx context.Context, tpID uuid.UUID) (*entity.Type, error)
 }
 
+type TypeAllGetter interface {
+	GetAll(ctx context.Context) ([]*entity.Type, error)
+}
+
 type TypeAdder interface {
 	Add(ctx context.Context, tp *entity.Type) error
 }
@@ -25,6 +29,7 @@ type TypeRemover interface {
 
 type TypeRepository interface {
 	TypeGetter
+	TypeAllGetter
 	TypeAdder
 	TypeChanger
 	TypeRemover

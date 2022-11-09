@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-
 	"github.com/alrund/yp-2-project/server/internal/application/usecase"
 	"github.com/alrund/yp-2-project/server/internal/domain/entity"
 	"github.com/alrund/yp-2-project/server/internal/infrastructure/adapter"
@@ -33,6 +32,46 @@ func (t TypeRepository) Get(ctx context.Context, tpID uuid.UUID) (*entity.Type, 
 	}
 
 	return &tp, nil
+}
+
+func (t TypeRepository) GetAll(ctx context.Context) ([]*entity.Type, error) {
+	rows, err := t.tx.QueryContext(ctx,
+		"SELECT id, name, is_binary FROM types",
+	)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, usecase.ErrTypeNotFound
+		}
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	types := make([]*entity.Type, 0)
+	for rows.Next() {
+		var tp entity.Type
+		err = rows.Scan(
+			&tp.ID,
+			&tp.Name,
+			&tp.IsBinary,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		types = append(types, &tp)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(types) == 0 {
+		return nil, usecase.ErrTypeNotFound
+	}
+
+	return types, nil
 }
 
 func (t TypeRepository) Add(ctx context.Context, tp *entity.Type) error {
