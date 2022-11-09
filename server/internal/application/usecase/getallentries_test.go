@@ -69,6 +69,56 @@ func TestGetAllEntries(t *testing.T) {
 				return &m{entryRepository, userRepository}
 			},
 		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := tt.mockPrepare(tt.args)
+
+			types, err := GetAllEntries(
+				tt.args.ctx,
+				m.entryRepository,
+				m.userRepository,
+			)
+
+			if tt.wantErr != nil {
+				assert.ErrorIs(t, tt.wantErr, err)
+				return
+			}
+			assert.NoError(t, err)
+			assert.Equal(t, testEntries[0].Name, types[0].Name)
+		})
+	}
+}
+
+func TestGetAllEntriesFail(t *testing.T) {
+	type m struct {
+		entryRepository *mocks.EntryAllByUserGetter
+		userRepository  *mocks.UserGetter
+	}
+
+	testUserID := uuid.New()
+	testEntries := []*entity.Entry{
+		{
+			ID:   uuid.New(),
+			Name: "entry1",
+		},
+		{
+			ID:   uuid.New(),
+			Name: "entry2",
+		},
+	}
+
+	type args struct {
+		ctx    context.Context
+		userID uuid.UUID
+	}
+
+	tests := []struct {
+		name        string
+		args        *args
+		wantErr     error
+		mockPrepare func(a *args) *m
+	}{
 		{
 			"fail with incorrect session",
 			&args{
@@ -77,7 +127,6 @@ func TestGetAllEntries(t *testing.T) {
 			},
 			ErrIncorrectSession,
 			func(a *args) *m {
-
 				userRepository := mocks.NewUserGetter(t)
 				entryRepository := mocks.NewEntryAllByUserGetter(t)
 
