@@ -13,7 +13,7 @@ func (c *Collection) SetEntry(ctx context.Context, types []string, data any) err
 		return usecase.ErrInvalidArgument
 	}
 
-	var qs = []*survey.Question{
+	qs := []*survey.Question{
 		{
 			Name: "typeindex",
 			Prompt: &survey.Select{

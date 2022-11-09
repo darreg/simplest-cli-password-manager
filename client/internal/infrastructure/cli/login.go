@@ -13,7 +13,7 @@ func (c *Collection) Login(ctx context.Context, data any) error {
 		return usecase.ErrInvalidArgument
 	}
 
-	var qs = []*survey.Question{
+	qs := []*survey.Question{
 		{
 			Name:     "login",
 			Prompt:   &survey.Input{Message: "Login"},

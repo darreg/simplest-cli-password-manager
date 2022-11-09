@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+
 	"github.com/alrund/yp-2-project/client/internal/domain/model"
 	"github.com/alrund/yp-2-project/client/pkg/proto"
 )

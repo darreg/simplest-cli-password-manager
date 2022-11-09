@@ -1,7 +1,6 @@
 package cli
 
-type Collection struct {
-}
+type Collection struct{}
 
 func New() *Collection {
 	return &Collection{}

@@ -2,14 +2,16 @@ package client
 
 import (
 	"errors"
-	"github.com/alrund/yp-2-project/client/internal/domain/model"
 
 	"github.com/alrund/yp-2-project/client/internal/application/usecase"
+	"github.com/alrund/yp-2-project/client/internal/domain/model"
 	"github.com/alrund/yp-2-project/client/pkg/proto"
 )
 
-var ErrGRPCClient = errors.New("no GRPS client")
-var ErrSessionKey = errors.New("no session")
+var (
+	ErrGRPCClient = errors.New("no GRPS client")
+	ErrSessionKey = errors.New("no session")
+)
 
 type Client struct {
 	grpcClient proto.AppClient

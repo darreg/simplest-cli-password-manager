@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+
 	"github.com/alrund/yp-2-project/client/internal/domain/model"
 	"github.com/alrund/yp-2-project/client/internal/domain/port"
 	"github.com/alrund/yp-2-project/client/pkg/proto"
@@ -31,7 +32,8 @@ func (c *Client) GetAllEntries(ctx context.Context) ([]*model.Entry, error) {
 		entries[i] = &model.Entry{
 			ID:     entry.EntryId,
 			TypeID: entry.TypeId,
-			Name:   entry.Name}
+			Name:   entry.Name,
+		}
 	}
 
 	return entries, nil
