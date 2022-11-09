@@ -25,6 +25,12 @@ func Auth(sessionLifeTime string, sessionRepository port.SessionRepository, decr
 		info *grpc.UnaryServerInfo,
 		unaryHandler grpc.UnaryHandler,
 	) (interface{}, error) {
+		if info.FullMethod == "/proto.App/Registration" ||
+			info.FullMethod == "/proto.App/Login" ||
+			info.FullMethod == "/proto.App/GetAllTypes" {
+			return unaryHandler(ctx, req)
+		}
+
 		var encryptedSessionKey string
 
 		md, ok := metadata.FromIncomingContext(ctx)
