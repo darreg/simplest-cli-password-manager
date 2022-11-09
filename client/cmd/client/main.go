@@ -4,6 +4,7 @@ import (
 	"github.com/alrund/yp-2-project/client/internal/application/app"
 	"github.com/alrund/yp-2-project/client/internal/infrastructure/adapter"
 	"github.com/alrund/yp-2-project/client/internal/infrastructure/builder"
+	"github.com/alrund/yp-2-project/client/internal/infrastructure/client"
 )
 
 func main() {
@@ -19,7 +20,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	if err := a.Run(); err != nil {
+	if err := a.Run(client.New(a)); err != nil {
 		logger.Fatal(err)
 	}
 }

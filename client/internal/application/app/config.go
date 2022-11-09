@@ -5,9 +5,9 @@ import (
 )
 
 type Config struct {
-	Debug           bool   `env-default:"false"`
-	SessionLifeTime string `env-default:"24h"`
-	ServerAddress   string `env:"SERVER_ADDRESS" env-default:"localhost:3000"`
+	Debug         bool   `env-default:"false"`
+	ServerAddress string `env:"SERVER_ADDRESS" env-default:"localhost:3000"`
+	CertFile      string `env:"CERT_FILE" env-default:"local.crt"`
 }
 
 func NewConfig(loader port.ConfigLoader) (*Config, error) {
