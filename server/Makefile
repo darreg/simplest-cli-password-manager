@@ -20,6 +20,9 @@ integration-test:
 race:
 	go test -v -race -count=1 ./...
 
+run:
+	go run cmd/server/main.go
+
 cover:
 	go test -short -tags=unit -race -coverprofile=coverage.out ./...
 	go tool cover -func=coverage.out
