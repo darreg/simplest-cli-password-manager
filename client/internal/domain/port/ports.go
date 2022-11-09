@@ -39,7 +39,7 @@ type GRPCClientSupporter interface {
 	GetEntry(ctx context.Context, entryID string) (*model.Entry, error)
 	GetAllEntries(ctx context.Context) ([]*model.Entry, error)
 	GetAllTypes(ctx context.Context) ([]*model.Type, error)
-	//RemoveEntry(ctx context.Context, entryID string) error
+	// RemoveEntry(ctx context.Context, entryID string) error
 }
 
 type CLILoginMethodSupporter interface {

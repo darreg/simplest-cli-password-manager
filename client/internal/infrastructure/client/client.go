@@ -14,7 +14,7 @@ var ErrSessionKey = errors.New("no session")
 type Client struct {
 	grpcClient proto.AppClient
 	sessionKey string
-	types      []model.Type
+	types      []*model.Type
 }
 
 func New() *Client {
