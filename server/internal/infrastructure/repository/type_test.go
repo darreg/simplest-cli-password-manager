@@ -75,6 +75,68 @@ func TestTypeGet(t *testing.T) {
 
 }
 
+func TestTypeGetAll(t *testing.T) {
+	want := []*entity.Type{
+		{
+			ID:       uuid.New(),
+			Name:     "qwerty",
+			IsBinary: false,
+		},
+		{
+			ID:       uuid.New(),
+			Name:     "qwerty2",
+			IsBinary: false,
+		},
+	}
+
+	t.Run("success", func(t *testing.T) {
+		db, mock, err := sqlmock.New()
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		}
+		defer db.Close()
+
+		mock.
+			ExpectQuery(regexp.QuoteMeta("SELECT id, name, is_binary FROM types")).
+			WillReturnRows(sqlmock.
+				NewRows([]string{"id", "name", "is_binary"}).
+				AddRow(want[0].ID, want[0].Name, want[0].IsBinary).
+				AddRow(want[1].ID, want[1].Name, want[1].IsBinary),
+			)
+
+		repository := NewTypeRepository(&adapter.Transactor{DB: db})
+		got, err := repository.GetAll(context.Background())
+		require.Nil(t, err)
+		require.NotNil(t, got)
+		assert.Equal(t, want[0].Name, got[0].Name)
+
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("there were unfulfilled expectations: %s", err)
+		}
+	})
+
+	t.Run("fail", func(t *testing.T) {
+		db, mock, err := sqlmock.New()
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		}
+		defer db.Close()
+
+		mock.
+			ExpectQuery(regexp.QuoteMeta("SELECT id, name, is_binary FROM types")).
+			WillReturnError(sql.ErrNoRows)
+
+		repository := NewTypeRepository(&adapter.Transactor{DB: db})
+		_, err = repository.GetAll(context.Background())
+		require.NotNil(t, err)
+		assert.ErrorIs(t, err, usecase.ErrTypeNotFound)
+
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("there were unfulfilled expectations: %s", err)
+		}
+	})
+}
+
 func TestTypeAdd(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
