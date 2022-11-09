@@ -147,6 +147,52 @@ func (_c *TypeRepository_Get_Call) Return(_a0 *entity.Type, _a1 error) *TypeRepo
 	return _c
 }
 
+// GetAll provides a mock function with given fields: ctx
+func (_m *TypeRepository) GetAll(ctx context.Context) ([]*entity.Type, error) {
+	ret := _m.Called(ctx)
+
+	var r0 []*entity.Type
+	if rf, ok := ret.Get(0).(func(context.Context) []*entity.Type); ok {
+		r0 = rf(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*entity.Type)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// TypeRepository_GetAll_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetAll'
+type TypeRepository_GetAll_Call struct {
+	*mock.Call
+}
+
+// GetAll is a helper method to define mock.On call
+//  - ctx context.Context
+func (_e *TypeRepository_Expecter) GetAll(ctx interface{}) *TypeRepository_GetAll_Call {
+	return &TypeRepository_GetAll_Call{Call: _e.mock.On("GetAll", ctx)}
+}
+
+func (_c *TypeRepository_GetAll_Call) Run(run func(ctx context.Context)) *TypeRepository_GetAll_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context))
+	})
+	return _c
+}
+
+func (_c *TypeRepository_GetAll_Call) Return(_a0 []*entity.Type, _a1 error) *TypeRepository_GetAll_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
 // Remove provides a mock function with given fields: ctx, tpID
 func (_m *TypeRepository) Remove(ctx context.Context, tpID uuid.UUID) error {
 	ret := _m.Called(ctx, tpID)
