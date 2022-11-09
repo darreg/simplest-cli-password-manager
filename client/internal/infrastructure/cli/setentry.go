@@ -7,7 +7,7 @@ import (
 	"github.com/alrund/yp-2-project/client/internal/application/usecase"
 )
 
-func Set(ctx context.Context, types []string, data any) error {
+func (c *Collection) SetEntry(ctx context.Context, types []string, data any) error {
 	setEntryDTO, ok := data.(*usecase.SetEntryDTO)
 	if !ok {
 		return usecase.ErrInvalidArgument
@@ -15,7 +15,7 @@ func Set(ctx context.Context, types []string, data any) error {
 
 	var qs = []*survey.Question{
 		{
-			Name: "typeID",
+			Name: "typeindex",
 			Prompt: &survey.Select{
 				Message: "Choose a type:",
 				Options: types,

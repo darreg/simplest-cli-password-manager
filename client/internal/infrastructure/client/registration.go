@@ -2,30 +2,21 @@ package client
 
 import (
 	"context"
-	"github.com/alrund/yp-2-project/client/internal/application/usecase"
-	"github.com/alrund/yp-2-project/client/internal/infrastructure/cli"
 	"github.com/alrund/yp-2-project/client/pkg/proto"
 )
 
-func (c *Client) Registration(ctx context.Context) error {
-	if c.GRPCClient == nil {
-		return ErrGRPCClient
+func (c *Client) Registration(ctx context.Context, login, password string) (string, error) {
+	if c.grpcClient == nil {
+		return "", ErrGRPCClient
 	}
 
-	registrationData, err := usecase.Registration(ctx, cli.Registration)
-	if err != nil {
-		return err
-	}
-
-	response, err := c.GRPCClient.Registration(ctx, &proto.RegistrationRequest{
-		Login:    registrationData.Login,
-		Password: registrationData.Password,
+	response, err := c.grpcClient.Registration(ctx, &proto.RegistrationRequest{
+		Login:    login,
+		Password: password,
 	})
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	c.EncryptedSessionKey = response.EncryptedSessionKey
-
-	return nil
+	return response.EncryptedSessionKey, nil
 }

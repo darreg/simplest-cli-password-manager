@@ -7,8 +7,8 @@ import (
 	"github.com/alrund/yp-2-project/client/internal/application/usecase"
 )
 
-func Registration(ctx context.Context, data any) error {
-	registrationData, ok := data.(*usecase.RegistrationData)
+func (c *Collection) Registration(ctx context.Context, data any) error {
+	registrationData, ok := data.(*usecase.RegistrationDTO)
 	if !ok {
 		return usecase.ErrInvalidArgument
 	}

@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 
+	"github.com/alrund/yp-2-project/client/internal/application/usecase"
 	"github.com/alrund/yp-2-project/client/internal/domain/port"
 	"github.com/alrund/yp-2-project/client/pkg/proto"
 	"google.golang.org/grpc"
@@ -24,32 +25,12 @@ func NewApp(
 	}
 }
 
-//var qs = []*survey.Question{
-//	{
-//		Name:      "name",
-//		Prompt:    &survey.Input{Message: "What is your name?"},
-//		Validate:  survey.Required,
-//		Transform: survey.Title,
-//	},
-//	{
-//		Name: "color",
-//		Prompt: &survey.Select{
-//			Message: "Choose a color:",
-//			Options: []string{"red", "blue", "green"},
-//			Default: "red",
-//		},
-//	},
-//	{
-//		Name:   "age",
-//		Prompt: &survey.Input{Message: "How old are you?"},
-//	},
-//}
-
-func (a *App) Run(client port.Client) error {
+func (a *App) Run(client port.GRPCClientSupporter, cliScript port.CLIScriptSupporter) error {
 	cred, err := credentials.NewClientTLSFromFile(a.Config.CertFile, "")
 	if err != nil {
 		return err
 	}
+
 	conn, err := grpc.Dial(a.Config.ServerAddress, grpc.WithTransportCredentials(cred))
 	if err != nil {
 		return err
@@ -61,36 +42,25 @@ func (a *App) Run(client port.Client) error {
 		return err
 	}
 
-	//client.SelectLoginMethod(context.Background())
+	for {
+		if client.IsEmptySessionKey() {
+			err := usecase.Login(
+				context.Background(),
+				client,
+				cliScript,
+			)
+			if err != nil {
+				return err
+			}
+		}
 
-	err = client.Login(context.Background())
-	if err != nil {
-		return err
+		err = usecase.Command(
+			context.Background(),
+			client,
+			cliScript,
+		)
+		if err != nil {
+			return err
+		}
 	}
-
-	//resp, err := a.Client.Registration(context.Background(), &proto.RegistrationRequest{
-	//	Login:    "qqq",
-	//	Password: "www",
-	//})
-	//
-	//if err != nil {
-	//	return err
-	//}
-	//// the answers will be written to this struct
-	//answers := struct {
-	//	Name          string // survey will match the question and field names
-	//	FavoriteColor string `survey:"color"` // or you can tag fields to match a specific name
-	//	Age           int    // if the types don't match, survey will convert it
-	//}{}
-	//
-	//// perform the questions
-	//err := survey.Ask(qs, &answers)
-	//if err != nil {
-	//	fmt.Println(err.Error())
-	//	return nil
-	//}
-	//
-	//fmt.Printf("%s chose %s.", answers.Name, answers.FavoriteColor)
-
-	return nil
 }

@@ -7,8 +7,8 @@ import (
 	"github.com/alrund/yp-2-project/client/internal/application/usecase"
 )
 
-func Login(ctx context.Context, data any) error {
-	credential, ok := data.(*usecase.Credential)
+func (c *Collection) Login(ctx context.Context, data any) error {
+	credential, ok := data.(*usecase.LoginDTO)
 	if !ok {
 		return usecase.ErrInvalidArgument
 	}

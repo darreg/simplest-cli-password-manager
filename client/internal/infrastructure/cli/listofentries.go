@@ -7,18 +7,18 @@ import (
 	"github.com/alrund/yp-2-project/client/internal/application/usecase"
 )
 
-func (c *Collection) SelectCommand(ctx context.Context, options []string, data any) error {
-	commandIndex, ok := data.(*int)
+func (c *Collection) ListOfEntries(ctx context.Context, entries []string, data any) error {
+	entryIndex, ok := data.(*int)
 	if !ok {
 		return usecase.ErrInvalidArgument
 	}
 
 	prompt := &survey.Select{
-		Message: "Select a command:",
-		Options: options,
+		Message: "Choose an entry:",
+		Options: entries,
 	}
 
-	err := survey.AskOne(prompt, commandIndex)
+	err := survey.AskOne(prompt, entryIndex)
 	if err != nil {
 		return err
 	}
