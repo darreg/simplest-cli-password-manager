@@ -1,3 +1,5 @@
+NOW := $(shell date +'%Y/%m/%d')
+
 lint:
 	golangci-lint run
 
@@ -14,7 +16,7 @@ race:
 	go test -v -race -count=1 ./...
 
 run:
-	go run cmd/client/main.go
+	go run -ldflags "-X main.buildVersion=v1.0.1 -X main.buildDate=$(NOW)" cmd/client/main.go
 
 cover:
 	go test -short -tags=unit -race -coverprofile=coverage.out ./...
