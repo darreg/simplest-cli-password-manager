@@ -23,6 +23,9 @@ race:
 run:
 	go run cmd/server/main.go
 
+build:
+	go build -o server cmd/server/main.go
+
 cover:
 	go test -short -tags=unit -race -coverprofile=coverage.out ./...
 	go tool cover -func=coverage.out

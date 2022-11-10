@@ -18,6 +18,9 @@ race:
 run:
 	go run -ldflags "-X main.buildVersion=v1.0.1 -X main.buildDate=$(NOW)" cmd/client/main.go
 
+build:
+	go build -o client -ldflags "-X main.buildVersion=v1.0.1 -X main.buildDate=$(NOW)" cmd/client/main.go
+
 cover:
 	go test -short -tags=unit -race -coverprofile=coverage.out ./...
 	go tool cover -func=coverage.out
@@ -27,3 +30,6 @@ cover-html:
 	go test -short -tags=unit -race -coverprofile=coverage.out ./...
 	go tool cover -html=coverage.out
 	rm coverage.out
+
+mock-generate:
+	mockery --dir=internal/domain/port --all --with-expecter
