@@ -3,6 +3,8 @@ package app
 import (
 	"context"
 	"fmt"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/alrund/yp-2-project/client/internal/application/usecase"
 	"github.com/alrund/yp-2-project/client/internal/domain/port"
@@ -44,9 +46,12 @@ func (a *App) Run(ctx context.Context, client port.GRPCClientSupporter, cliScrip
 	}
 
 	for {
-		err = Login(ctx, client, cliScript)
-		if err != nil {
-			return err
+		if client.IsEmptySessionKey() {
+			err = Login(ctx, client, cliScript)
+			if err != nil {
+				return err
+			}
+			continue
 		}
 
 		err = Command(ctx, client, cliScript)
@@ -67,33 +72,37 @@ func Login(ctx context.Context, client port.GRPCClientSupporter, cliScript port.
 		loginMethods = []string{Login, Registration}
 	)
 
-	if client.IsEmptySessionKey() {
-		loginMethodIndex, err := usecase.SelectLoginMethod(ctx, cliScript, loginMethods)
-		if err != nil {
-			return err
-		}
-
-		switch loginMethods[loginMethodIndex] {
-		case Login:
-			sessionKey, err = usecase.Login(ctx, client, cliScript)
-		case Registration:
-			sessionKey, err = usecase.Registration(ctx, client, cliScript)
-		}
-		if err != nil {
-			return err
-		}
-
-		err = client.SetSessionKey(sessionKey)
-		if err != nil {
-			return err
-		}
-
-		greets, err := usecase.Greetings(ctx, client)
-		if err != nil {
-			return err
-		}
-		fmt.Println(greets)
+	loginMethodIndex, err := usecase.SelectLoginMethod(ctx, cliScript, loginMethods)
+	if err != nil {
+		return err
 	}
+
+	switch loginMethods[loginMethodIndex] {
+	case Login:
+		sessionKey, err = usecase.Login(ctx, client, cliScript)
+	case Registration:
+		sessionKey, err = usecase.Registration(ctx, client, cliScript)
+	}
+	if err != nil {
+		if e, ok := status.FromError(err); ok {
+			if e.Code() == codes.Unauthenticated {
+				fmt.Println("Check your credentials")
+				return nil
+			}
+		}
+		return err
+	}
+
+	err = client.SetSessionKey(sessionKey)
+	if err != nil {
+		return err
+	}
+
+	result, err := usecase.Greetings(ctx, client)
+	if err != nil {
+		return err
+	}
+	fmt.Println(result)
 
 	return nil
 }
@@ -118,12 +127,16 @@ func Command(ctx context.Context, client port.GRPCClientSupporter, cliScript por
 
 	switch commands[commandIndex] {
 	case List:
-		err = usecase.List(ctx, client, cliScript, types)
+		result, err := usecase.List(ctx, client, cliScript, types)
+		if err != nil {
+			return err
+		}
+		fmt.Println(result)
 	case Set:
 		err = usecase.Set(ctx, client, cliScript, types)
-	}
-	if err != nil {
-		return err
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
