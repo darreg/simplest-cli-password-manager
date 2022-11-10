@@ -8,6 +8,9 @@ import (
 	"github.com/alrund/yp-2-project/client/internal/infrastructure/cli"
 	"github.com/alrund/yp-2-project/client/internal/infrastructure/client"
 	"golang.org/x/net/context"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 const defaultBuildValue string = "N/A"
@@ -19,6 +22,9 @@ var (
 
 func main() {
 	printBuildInfo()
+
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
+	defer stop()
 
 	logger := adapter.NewLogger()
 
@@ -32,8 +38,10 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	if err := a.Run(context.Background(), client.New(), cli.New()); err != nil {
-		logger.Fatal(err)
+	if err := a.Run(ctx, client.New(), cli.New()); err != nil {
+		if err.Error() != os.Interrupt.String() {
+			logger.Fatal(err)
+		}
 	}
 }
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/alrund/yp-2-project/client/internal/application/usecase"
+	"github.com/alrund/yp-2-project/client/internal/domain/model"
 	"github.com/alrund/yp-2-project/client/internal/domain/port"
 	"github.com/alrund/yp-2-project/client/pkg/proto"
 	"google.golang.org/grpc"
@@ -34,7 +35,7 @@ func (a *App) Run(ctx context.Context, client port.GRPCClientSupporter, cliScrip
 		return err
 	}
 
-	conn, err := grpc.Dial(a.Config.ServerAddress, grpc.WithTransportCredentials(cred))
+	conn, err := grpc.DialContext(ctx, a.Config.ServerAddress, grpc.WithTransportCredentials(cred))
 	if err != nil {
 		return err
 	}
@@ -50,6 +51,26 @@ func (a *App) Run(ctx context.Context, client port.GRPCClientSupporter, cliScrip
 		return err
 	}
 
+	go func() {
+		<-ctx.Done()
+		fmt.Println("\nThe application is stopped by the user.\nBye!")
+	}()
+
+	err = a.Wait(ctx, client, cliScript, types)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *App) Wait(
+	ctx context.Context,
+	client port.GRPCClientSupporter,
+	cliScript port.CLIScriptSupporter,
+	types []*model.Type,
+) error {
+	var err error
 	for {
 		if client.IsEmptySessionKey() {
 			err = a.Login(ctx, client, cliScript, map[string]func() (string, error){
