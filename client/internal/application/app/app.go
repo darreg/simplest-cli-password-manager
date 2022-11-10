@@ -45,48 +45,49 @@ func (a *App) Run(ctx context.Context, client port.GRPCClientSupporter, cliScrip
 		return err
 	}
 
+	types, err := client.GetAllTypes(ctx)
+	if err != nil {
+		return err
+	}
+
 	for {
 		if client.IsEmptySessionKey() {
-			err = Login(ctx, client, cliScript)
+			err = a.Login(ctx, client, cliScript, map[string]func() (string, error){
+				"Login":        func() (string, error) { return usecase.Login(ctx, client, cliScript) },
+				"Registration": func() (string, error) { return usecase.Registration(ctx, client, cliScript) },
+			})
 			if err != nil {
 				return err
 			}
 			continue
 		}
 
-		err = Command(ctx, client, cliScript)
+		err = a.Command(ctx, cliScript, map[string]func() (string, error){
+			"List": func() (string, error) { return usecase.List(ctx, client, cliScript, types) },
+			"Set":  func() (string, error) { return usecase.Set(ctx, client, cliScript, types) },
+		})
 		if err != nil {
 			return err
 		}
 	}
 }
 
-func Login(ctx context.Context, client port.GRPCClientSupporter, cliScript port.CLIScriptSupporter) error {
-	const (
-		Login        string = "Login"
-		Registration string = "Registration"
-	)
-
-	var (
-		sessionKey   string
-		loginMethods = []string{Login, Registration}
-	)
-
-	loginMethodIndex, err := usecase.SelectLoginMethod(ctx, cliScript, loginMethods)
+func (a *App) Login(
+	ctx context.Context,
+	client port.GRPCClientSupporter,
+	cliScript port.CLIScriptSupporter,
+	loginMethodFns map[string]func() (string, error),
+) error {
+	loginMethodFn, err := usecase.SelectLoginMethod(ctx, cliScript, loginMethodFns)
 	if err != nil {
 		return err
 	}
 
-	switch loginMethods[loginMethodIndex] {
-	case Login:
-		sessionKey, err = usecase.Login(ctx, client, cliScript)
-	case Registration:
-		sessionKey, err = usecase.Registration(ctx, client, cliScript)
-	}
+	sessionKey, err := loginMethodFn()
 	if err != nil {
 		if e, ok := status.FromError(err); ok {
 			if e.Code() == codes.Unauthenticated {
-				fmt.Println("Check your credentials")
+				fmt.Printf("Check your credentials\n\n")
 				return nil
 			}
 		}
@@ -102,41 +103,40 @@ func Login(ctx context.Context, client port.GRPCClientSupporter, cliScript port.
 	if err != nil {
 		return err
 	}
-	fmt.Println(result)
+
+	if result != "" {
+		fmt.Println(result)
+	}
 
 	return nil
 }
 
-func Command(ctx context.Context, client port.GRPCClientSupporter, cliScript port.CLIScriptSupporter) error {
-	const (
-		List string = "List"
-		Set  string = "Set"
-	)
-
-	commands := []string{List, Set}
-
-	types, err := client.GetAllTypes(ctx)
+func (a *App) Command(
+	ctx context.Context,
+	cliScript port.CLIScriptSupporter,
+	commandFns map[string]func() (string, error),
+) error {
+	commandFn, err := usecase.SelectCommand(ctx, cliScript, commandFns)
 	if err != nil {
 		return err
 	}
 
-	commandIndex, err := usecase.SelectCommand(ctx, cliScript, commands)
+	result, err := commandFn()
 	if err != nil {
-		return err
-	}
-
-	switch commands[commandIndex] {
-	case List:
-		result, err := usecase.List(ctx, client, cliScript, types)
-		if err != nil {
-			return err
+		if e, ok := status.FromError(err); ok {
+			if e.Code() == codes.NotFound {
+				fmt.Printf("No entries\n\n")
+				return nil
+			} else if e.Code() == codes.Unauthenticated {
+				fmt.Printf("Check your credentials\n\n")
+				return nil
+			}
 		}
+		return err
+	}
+
+	if result != "" {
 		fmt.Println(result)
-	case Set:
-		err = usecase.Set(ctx, client, cliScript, types)
-		if err != nil {
-			return err
-		}
 	}
 
 	return nil

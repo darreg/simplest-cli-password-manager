@@ -3,8 +3,6 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	"github.com/alrund/yp-2-project/client/internal/domain/model"
 	"github.com/alrund/yp-2-project/client/internal/domain/port"
@@ -18,11 +16,6 @@ func List(
 ) (string, error) {
 	entries, err := client.GetAllEntries(ctx)
 	if err != nil {
-		if e, ok := status.FromError(err); ok {
-			if e.Code() == codes.NotFound {
-				return "No entries", nil
-			}
-		}
 		return "", err
 	}
 
@@ -50,7 +43,7 @@ func List(
 	}
 
 	return fmt.Sprintf(
-		"ID:\t%s\nName:\t%s\nType:\t%s\nMetadata:\n%s\nData:\n%s\n",
+		"ID:\t%s\nName:\t%s\nType:\t%s\nMetadata:\n%s\nData:\n%s",
 		fullEntry.ID,
 		fullEntry.Name,
 		tpName,

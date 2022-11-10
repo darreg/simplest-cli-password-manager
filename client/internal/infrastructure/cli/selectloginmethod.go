@@ -8,7 +8,7 @@ import (
 )
 
 func (c *Collection) SelectLoginMethod(ctx context.Context, options []string, data any) error {
-	loginMethodIndex, ok := data.(*int)
+	loginMethodIndex, ok := data.(*string)
 	if !ok {
 		return usecase.ErrInvalidArgument
 	}

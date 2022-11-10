@@ -19,7 +19,7 @@ func Set(
 	client port.GRPCClientSetSupporter,
 	cliScript port.CLISetEntrySupporter,
 	types []*model.Type,
-) error {
+) (string, error) {
 	typeNames := make([]string, len(types))
 	for i, tp := range types {
 		typeNames[i] = tp.Name
@@ -28,13 +28,13 @@ func Set(
 	entryDTO := &SetEntryDTO{}
 	err := cliScript.SetEntry(ctx, typeNames, entryDTO)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	err = client.SetEntry(ctx, types[entryDTO.TypeIndex].ID, entryDTO.Name, entryDTO.Metadata, []byte(entryDTO.Data))
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	return "", nil
 }

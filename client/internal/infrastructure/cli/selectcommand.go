@@ -9,7 +9,7 @@ import (
 )
 
 func (c *Collection) SelectCommand(ctx context.Context, options []string, data any) error {
-	commandIndex, ok := data.(*int)
+	commandIndex, ok := data.(*string)
 	if !ok {
 		return usecase.ErrInvalidArgument
 	}

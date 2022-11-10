@@ -9,14 +9,19 @@ import (
 func SelectLoginMethod(
 	ctx context.Context,
 	cliScript port.CLISelectLoginMethodSupporter,
-	loginMethods []string,
-) (int, error) {
-	var loginMethodIndex int
+	loginMethods map[string]func() (string, error),
+) (func() (string, error), error) {
+	var loginMethodName string
 
-	err := cliScript.SelectLoginMethod(ctx, loginMethods, &loginMethodIndex)
-	if err != nil {
-		return 0, err
+	var names []string
+	for methodName := range loginMethods {
+		names = append(names, methodName)
 	}
 
-	return loginMethodIndex, nil
+	err := cliScript.SelectLoginMethod(ctx, names, &loginMethodName)
+	if err != nil {
+		return nil, err
+	}
+
+	return loginMethods[loginMethodName], nil
 }

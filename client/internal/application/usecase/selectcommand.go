@@ -9,14 +9,19 @@ import (
 func SelectCommand(
 	ctx context.Context,
 	cliScript port.CLISelectCommandSupporter,
-	commands []string,
-) (int, error) {
-	var commandIndex int
+	commands map[string]func() (string, error),
+) (func() (string, error), error) {
+	var selectedCommandName string
 
-	err := cliScript.SelectCommand(ctx, commands, &commandIndex)
-	if err != nil {
-		return 0, err
+	var commandNames []string
+	for commandName := range commands {
+		commandNames = append(commandNames, commandName)
 	}
 
-	return commandIndex, nil
+	err := cliScript.SelectCommand(ctx, commandNames, &selectedCommandName)
+	if err != nil {
+		return nil, err
+	}
+
+	return commands[selectedCommandName], nil
 }
