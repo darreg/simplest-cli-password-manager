@@ -40,6 +40,7 @@ func Builder(config *app.Config, logger port.Logger) (*app.App, error) {
 			config.KeyFile,
 			encryptor,
 			sessionRepository,
+			logger,
 		)
 	)
 
