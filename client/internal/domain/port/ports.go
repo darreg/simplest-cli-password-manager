@@ -20,10 +20,6 @@ type Logger interface {
 	Fatal(err error, args ...interface{})
 }
 
-type TypeDecoder interface {
-	Decode(data []byte) []byte
-}
-
 type GRPCClientRegistrationSupporter interface {
 	Registration(ctx context.Context, name, login, password string) (string, error)
 }
