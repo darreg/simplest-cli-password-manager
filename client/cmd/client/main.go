@@ -2,15 +2,16 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/alrund/yp-2-project/client/internal/application/app"
 	"github.com/alrund/yp-2-project/client/internal/infrastructure/adapter"
 	"github.com/alrund/yp-2-project/client/internal/infrastructure/builder"
 	"github.com/alrund/yp-2-project/client/internal/infrastructure/cli"
 	"github.com/alrund/yp-2-project/client/internal/infrastructure/client"
 	"golang.org/x/net/context"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 const defaultBuildValue string = "N/A"

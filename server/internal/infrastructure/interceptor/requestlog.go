@@ -2,6 +2,7 @@ package interceptor
 
 import (
 	"context"
+
 	"github.com/alrund/yp-2-project/server/internal/domain/entity"
 	"github.com/alrund/yp-2-project/server/internal/domain/port"
 	"google.golang.org/grpc"
@@ -20,7 +21,6 @@ func RequestLog(logger port.Logger) func(
 		info *grpc.UnaryServerInfo,
 		unaryHandler grpc.UnaryHandler,
 	) (interface{}, error) {
-
 		var userID string
 		contextSession := ctx.Value(port.SessionContextKey)
 		session, ok := contextSession.(*entity.Session)
