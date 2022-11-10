@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"sort"
 
 	"github.com/alrund/yp-2-project/client/internal/domain/port"
 )
@@ -13,10 +14,14 @@ func SelectLoginMethod(
 ) (func() (string, error), error) {
 	var loginMethodName string
 
-	var names []string
+	names := make([]string, len(loginMethods))
+	var i int
 	for methodName := range loginMethods {
-		names = append(names, methodName)
+		names[i] = methodName
+		i++
 	}
+
+	sort.Strings(names)
 
 	err := cliScript.SelectLoginMethod(ctx, names, &loginMethodName)
 	if err != nil {

@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"sort"
 
 	"github.com/alrund/yp-2-project/client/internal/domain/port"
 )
@@ -13,10 +14,14 @@ func SelectCommand(
 ) (func() (string, error), error) {
 	var selectedCommandName string
 
-	var commandNames []string
+	commandNames := make([]string, len(commands))
+	var i int
 	for commandName := range commands {
-		commandNames = append(commandNames, commandName)
+		commandNames[i] = commandName
+		i++
 	}
+
+	sort.Strings(commandNames)
 
 	err := cliScript.SelectCommand(ctx, commandNames, &selectedCommandName)
 	if err != nil {

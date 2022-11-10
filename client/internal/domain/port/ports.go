@@ -56,7 +56,7 @@ type GRPCClientSupporter interface {
 	GRPCClientListSupporter
 	GRPCClientSetSupporter
 	GRPCClientUserGetter
-	
+
 	// RemoveEntry(ctx context.Context, entryID string) error
 }
 

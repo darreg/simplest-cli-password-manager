@@ -11,7 +11,6 @@ func Greetings(
 	ctx context.Context,
 	client port.GRPCClientUserGetter,
 ) (string, error) {
-
 	user, err := client.GetUser(ctx)
 	if err != nil {
 		return "", err

@@ -3,14 +3,14 @@ package app
 import (
 	"context"
 	"fmt"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	"github.com/alrund/yp-2-project/client/internal/application/usecase"
 	"github.com/alrund/yp-2-project/client/internal/domain/port"
 	"github.com/alrund/yp-2-project/client/pkg/proto"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/status"
 )
 
 type App struct {
