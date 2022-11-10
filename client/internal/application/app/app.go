@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/alrund/yp-2-project/client/internal/application/usecase"
 	"github.com/alrund/yp-2-project/client/internal/domain/port"
@@ -86,6 +87,12 @@ func Login(ctx context.Context, client port.GRPCClientSupporter, cliScript port.
 		if err != nil {
 			return err
 		}
+
+		greets, err := usecase.Greetings(ctx, client)
+		if err != nil {
+			return err
+		}
+		fmt.Println(greets)
 	}
 
 	return nil
