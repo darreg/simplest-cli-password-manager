@@ -25,9 +25,7 @@ message LoginResponse {
   string encrypted_session_key = 1;
 }
 
-message GetUserRequest {
-  string user_id = 1;
-}
+message GetUserRequest {}
 
 message GetUserResponse {
   string user_id = 1;
@@ -94,6 +92,7 @@ message GetAllTypesResponse {
 service App {
   rpc Registration(RegistrationRequest) returns (RegistrationResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
   rpc SetEntry(SetEntryRequest) returns (SetEntryResponse);
   rpc GetEntry(GetEntryRequest) returns (GetEntryResponse);
   rpc GetAllEntries(GetAllEntriesRequest) returns (GetAllEntriesResponse);

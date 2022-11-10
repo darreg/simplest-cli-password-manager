@@ -41,6 +41,10 @@ type GRPCClientSetSupporter interface {
 	SetEntry(ctx context.Context, typeID, name, metadata string, data []byte) error
 }
 
+type GRPCClientUserGetter interface {
+	GetUser(ctx context.Context) (*model.User, error)
+}
+
 type GRPCClientSupporter interface {
 	SetGRPCClient(client any) error
 	SetSessionKey(sessionKey string) error
@@ -51,7 +55,8 @@ type GRPCClientSupporter interface {
 	GRPCClientLoginSupporter
 	GRPCClientListSupporter
 	GRPCClientSetSupporter
-
+	GRPCClientUserGetter
+	
 	// RemoveEntry(ctx context.Context, entryID string) error
 }
 

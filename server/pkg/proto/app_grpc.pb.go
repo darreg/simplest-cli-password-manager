@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type AppClient interface {
 	Registration(ctx context.Context, in *RegistrationRequest, opts ...grpc.CallOption) (*RegistrationResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
 	SetEntry(ctx context.Context, in *SetEntryRequest, opts ...grpc.CallOption) (*SetEntryResponse, error)
 	GetEntry(ctx context.Context, in *GetEntryRequest, opts ...grpc.CallOption) (*GetEntryResponse, error)
 	GetAllEntries(ctx context.Context, in *GetAllEntriesRequest, opts ...grpc.CallOption) (*GetAllEntriesResponse, error)
@@ -51,6 +52,15 @@ func (c *appClient) Registration(ctx context.Context, in *RegistrationRequest, o
 func (c *appClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
 	out := new(LoginResponse)
 	err := c.cc.Invoke(ctx, "/proto.App/Login", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appClient) GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error) {
+	out := new(GetUserResponse)
+	err := c.cc.Invoke(ctx, "/proto.App/GetUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -108,6 +118,7 @@ func (c *appClient) DeleteEntry(ctx context.Context, in *DeleteEntryRequest, opt
 type AppServer interface {
 	Registration(context.Context, *RegistrationRequest) (*RegistrationResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
+	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
 	SetEntry(context.Context, *SetEntryRequest) (*SetEntryResponse, error)
 	GetEntry(context.Context, *GetEntryRequest) (*GetEntryResponse, error)
 	GetAllEntries(context.Context, *GetAllEntriesRequest) (*GetAllEntriesResponse, error)
@@ -125,6 +136,9 @@ func (UnimplementedAppServer) Registration(context.Context, *RegistrationRequest
 }
 func (UnimplementedAppServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+}
+func (UnimplementedAppServer) GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
 }
 func (UnimplementedAppServer) SetEntry(context.Context, *SetEntryRequest) (*SetEntryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetEntry not implemented")
@@ -186,6 +200,24 @@ func _App_Login_Handler(srv interface{}, ctx context.Context, dec func(interface
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AppServer).Login(ctx, req.(*LoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _App_GetUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppServer).GetUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.App/GetUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppServer).GetUser(ctx, req.(*GetUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -294,6 +326,10 @@ var App_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Login",
 			Handler:    _App_Login_Handler,
+		},
+		{
+			MethodName: "GetUser",
+			Handler:    _App_GetUser_Handler,
 		},
 		{
 			MethodName: "SetEntry",
