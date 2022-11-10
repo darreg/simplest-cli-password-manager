@@ -25,7 +25,7 @@ func NewApp(
 	}
 }
 
-func (a *App) Run(client port.GRPCClientSupporter, cliScript port.CLIScriptSupporter) error {
+func (a *App) Run(ctx context.Context, client port.GRPCClientSupporter, cliScript port.CLIScriptSupporter) error {
 	cred, err := credentials.NewClientTLSFromFile(a.Config.CertFile, "")
 	if err != nil {
 		return err
@@ -43,24 +43,81 @@ func (a *App) Run(client port.GRPCClientSupporter, cliScript port.CLIScriptSuppo
 	}
 
 	for {
-		if client.IsEmptySessionKey() {
-			err := usecase.Login(
-				context.Background(),
-				client,
-				cliScript,
-			)
-			if err != nil {
-				return err
-			}
+		err = Login(ctx, client, cliScript)
+		if err != nil {
+			return err
 		}
 
-		err = usecase.Command(
-			context.Background(),
-			client,
-			cliScript,
-		)
+		err = Command(ctx, client, cliScript)
 		if err != nil {
 			return err
 		}
 	}
+}
+
+func Login(ctx context.Context, client port.GRPCClientSupporter, cliScript port.CLIScriptSupporter) error {
+	const (
+		Login        string = "Login"
+		Registration string = "Registration"
+	)
+
+	var (
+		sessionKey   string
+		loginMethods = []string{Login, Registration}
+	)
+
+	if client.IsEmptySessionKey() {
+		loginMethodIndex, err := usecase.SelectLoginMethod(ctx, cliScript, loginMethods)
+		if err != nil {
+			return err
+		}
+
+		switch loginMethods[loginMethodIndex] {
+		case Login:
+			sessionKey, err = usecase.Login(ctx, client, cliScript)
+		case Registration:
+			sessionKey, err = usecase.Registration(ctx, client, cliScript)
+		}
+		if err != nil {
+			return err
+		}
+
+		err = client.SetSessionKey(sessionKey)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func Command(ctx context.Context, client port.GRPCClientSupporter, cliScript port.CLIScriptSupporter) error {
+	const (
+		List string = "List"
+		Set  string = "Set"
+	)
+
+	commands := []string{List, Set}
+
+	types, err := client.GetAllTypes(ctx)
+	if err != nil {
+		return err
+	}
+
+	commandIndex, err := usecase.SelectCommand(ctx, cliScript, commands)
+	if err != nil {
+		return err
+	}
+
+	switch commands[commandIndex] {
+	case List:
+		err = usecase.List(ctx, client, cliScript, types)
+	case Set:
+		err = usecase.Set(ctx, client, cliScript, types)
+	}
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

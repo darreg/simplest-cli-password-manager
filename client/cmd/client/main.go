@@ -6,6 +6,7 @@ import (
 	"github.com/alrund/yp-2-project/client/internal/infrastructure/builder"
 	"github.com/alrund/yp-2-project/client/internal/infrastructure/cli"
 	"github.com/alrund/yp-2-project/client/internal/infrastructure/client"
+	"golang.org/x/net/context"
 )
 
 func main() {
@@ -21,7 +22,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	if err := a.Run(client.New(), cli.New()); err != nil {
+	if err := a.Run(context.Background(), client.New(), cli.New()); err != nil {
 		logger.Fatal(err)
 	}
 }

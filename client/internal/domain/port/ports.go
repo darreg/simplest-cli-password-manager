@@ -24,38 +24,66 @@ type TypeDecoder interface {
 	Decode(data []byte) []byte
 }
 
-type GRPCClientLoginMethodSupporter interface {
+type GRPCClientRegistrationSupporter interface {
 	Registration(ctx context.Context, login, password string) (string, error)
+}
+
+type GRPCClientLoginSupporter interface {
 	Login(ctx context.Context, login, password string) (string, error)
-	SetSessionKey(sessionKey string) error
+}
+
+type GRPCClientListSupporter interface {
+	GetEntry(ctx context.Context, entryID string) (*model.Entry, error)
+	GetAllEntries(ctx context.Context) ([]*model.Entry, error)
+}
+
+type GRPCClientSetSupporter interface {
+	SetEntry(ctx context.Context, typeID, name, metadata string, data []byte) error
 }
 
 type GRPCClientSupporter interface {
 	SetGRPCClient(client any) error
+	SetSessionKey(sessionKey string) error
 	IsEmptySessionKey() bool
-
-	GRPCClientLoginMethodSupporter
-
-	SetEntry(ctx context.Context, typeID, name, metadata string, data []byte) error
-	GetEntry(ctx context.Context, entryID string) (*model.Entry, error)
-	GetAllEntries(ctx context.Context) ([]*model.Entry, error)
 	GetAllTypes(ctx context.Context) ([]*model.Type, error)
+
+	GRPCClientRegistrationSupporter
+	GRPCClientLoginSupporter
+	GRPCClientListSupporter
+	GRPCClientSetSupporter
+
 	// RemoveEntry(ctx context.Context, entryID string) error
 }
 
-type CLILoginMethodSupporter interface {
+type CLISelectLoginMethodSupporter interface {
 	SelectLoginMethod(ctx context.Context, options []string, data any) error
+}
+
+type CLILoginSupporter interface {
 	Login(ctx context.Context, data any) error
+}
+
+type CLIRegistrationSupporter interface {
 	Registration(ctx context.Context, data any) error
 }
 
-type CLICommandSupporter interface {
+type CLISelectCommandSupporter interface {
 	SelectCommand(ctx context.Context, options []string, data any) error
+}
+
+type CLISetEntrySupporter interface {
 	SetEntry(ctx context.Context, types []string, data any) error
+}
+
+type CLIListOfEntriesSupporter interface {
 	ListOfEntries(ctx context.Context, entries []string, data any) error
 }
 
 type CLIScriptSupporter interface {
-	CLILoginMethodSupporter
-	CLICommandSupporter
+	CLISelectLoginMethodSupporter
+	CLILoginSupporter
+	CLIRegistrationSupporter
+	CLISelectCommandSupporter
+	CLISetEntrySupporter
+	CLIListOfEntriesSupporter
 }
