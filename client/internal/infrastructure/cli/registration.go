@@ -15,6 +15,11 @@ func (c *Collection) Registration(ctx context.Context, data any) error {
 
 	qs := []*survey.Question{
 		{
+			Name:     "name",
+			Prompt:   &survey.Input{Message: "Name"},
+			Validate: survey.Required,
+		},
+		{
 			Name:     "login",
 			Prompt:   &survey.Input{Message: "Login"},
 			Validate: survey.Required,

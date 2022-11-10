@@ -10,6 +10,7 @@ import (
 )
 
 type RegistrationData struct {
+	Name     string
 	Login    string
 	Password string
 }
@@ -31,7 +32,7 @@ func Registration(
 		return "", ErrLoginAlreadyUse
 	}
 
-	user = entity.NewUser(regData.Login, hasher.Hash(regData.Password))
+	user = entity.NewUser(regData.Name, regData.Login, hasher.Hash(regData.Password))
 	err = userRepository.Add(ctx, user)
 	if err != nil {
 		return "", ErrInternalServerError

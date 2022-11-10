@@ -6,12 +6,13 @@ import (
 	"github.com/alrund/yp-2-project/client/pkg/proto"
 )
 
-func (c *Client) Registration(ctx context.Context, login, password string) (string, error) {
+func (c *Client) Registration(ctx context.Context, name, login, password string) (string, error) {
 	if c.grpcClient == nil {
 		return "", ErrGRPCClient
 	}
 
 	response, err := c.grpcClient.Registration(ctx, &proto.RegistrationRequest{
+		Name:     name,
 		Login:    login,
 		Password: password,
 	})

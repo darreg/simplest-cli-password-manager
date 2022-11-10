@@ -29,16 +29,17 @@ func TestUserGet(t *testing.T) {
 
 		want := &entity.User{
 			ID:           uuid.New(),
+			Name:         "UserName",
 			Login:        "qwerty",
 			PasswordHash: "pass",
 		}
 
 		mock.
-			ExpectQuery(regexp.QuoteMeta("SELECT id, login, password FROM users WHERE id = $1")).
+			ExpectQuery(regexp.QuoteMeta("SELECT id, name, login, password FROM users WHERE id = $1")).
 			WithArgs(want.ID).
 			WillReturnRows(sqlmock.
-				NewRows([]string{"id", "login", "password"}).
-				AddRow(want.ID, want.Login, want.PasswordHash),
+				NewRows([]string{"id", "name", "login", "password"}).
+				AddRow(want.ID, want.Name, want.Login, want.PasswordHash),
 			)
 
 		repository := NewUserRepository(&adapter.Transactor{DB: db})
@@ -60,7 +61,7 @@ func TestUserGet(t *testing.T) {
 		defer db.Close()
 
 		mock.
-			ExpectQuery(regexp.QuoteMeta("SELECT id, login, password FROM users WHERE id = $1")).
+			ExpectQuery(regexp.QuoteMeta("SELECT id, name, login, password FROM users WHERE id = $1")).
 			WithArgs(testUUID).
 			WillReturnError(sql.ErrNoRows)
 
@@ -89,11 +90,11 @@ func TestUserGetByLogin(t *testing.T) {
 		defer db.Close()
 
 		mock.
-			ExpectQuery(regexp.QuoteMeta("SELECT id, login, password FROM users WHERE login = $1")).
+			ExpectQuery(regexp.QuoteMeta("SELECT id, name, login, password FROM users WHERE login = $1")).
 			WithArgs(want.Login).
 			WillReturnRows(sqlmock.
-				NewRows([]string{"id", "login", "password"}).
-				AddRow(want.ID, want.Login, want.PasswordHash),
+				NewRows([]string{"id", "name", "login", "password"}).
+				AddRow(want.ID, want.Name, want.Login, want.PasswordHash),
 			)
 
 		repository := NewUserRepository(&adapter.Transactor{DB: db})
@@ -115,7 +116,7 @@ func TestUserGetByLogin(t *testing.T) {
 		defer db.Close()
 
 		mock.
-			ExpectQuery(regexp.QuoteMeta("SELECT id, login, password FROM users WHERE login = $1")).
+			ExpectQuery(regexp.QuoteMeta("SELECT id, name, login, password FROM users WHERE login = $1")).
 			WithArgs(want.Login).
 			WillReturnError(sql.ErrNoRows)
 
@@ -144,11 +145,11 @@ func TestUserGetByCredential(t *testing.T) {
 		defer db.Close()
 
 		mock.
-			ExpectQuery(regexp.QuoteMeta("SELECT id, login, password FROM users WHERE login = $1 AND password=$2")).
+			ExpectQuery(regexp.QuoteMeta("SELECT id, name, login, password FROM users WHERE login = $1 AND password=$2")).
 			WithArgs(want.Login, want.PasswordHash).
 			WillReturnRows(sqlmock.
-				NewRows([]string{"id", "login", "password"}).
-				AddRow(want.ID, want.Login, want.PasswordHash),
+				NewRows([]string{"id", "name", "login", "password"}).
+				AddRow(want.ID, want.Name, want.Login, want.PasswordHash),
 			)
 
 		repository := NewUserRepository(&adapter.Transactor{DB: db})
@@ -170,7 +171,7 @@ func TestUserGetByCredential(t *testing.T) {
 		defer db.Close()
 
 		mock.
-			ExpectQuery(regexp.QuoteMeta("SELECT id, login, password FROM users WHERE login = $1 AND password=$2")).
+			ExpectQuery(regexp.QuoteMeta("SELECT id, name, login, password FROM users WHERE login = $1 AND password=$2")).
 			WithArgs(want.Login, want.PasswordHash).
 			WillReturnError(sql.ErrNoRows)
 
@@ -193,13 +194,14 @@ func TestUserAdd(t *testing.T) {
 
 	arg := &entity.User{
 		ID:           uuid.New(),
+		Name:         "UserName",
 		Login:        "qwerty",
 		PasswordHash: "pass",
 	}
 
 	mock.
-		ExpectExec(regexp.QuoteMeta("INSERT INTO users(id, login, password) VALUES($1, $2, $3)")).
-		WithArgs(arg.ID, arg.Login, arg.PasswordHash).
+		ExpectExec(regexp.QuoteMeta("INSERT INTO users(id, name, login, password) VALUES($1, $2, $3, $4)")).
+		WithArgs(arg.ID, arg.Name, arg.Login, arg.PasswordHash).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
 	repository := NewUserRepository(&adapter.Transactor{DB: db})

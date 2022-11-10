@@ -23,8 +23,8 @@ func (u UserRepository) Get(ctx context.Context, userID uuid.UUID) (*entity.User
 	var user entity.User
 
 	err := u.tx.QueryRowContext(ctx,
-		"SELECT id, login, password FROM users WHERE id = $1", userID,
-	).Scan(&user.ID, &user.Login, &user.PasswordHash)
+		"SELECT id, name, login, password FROM users WHERE id = $1", userID,
+	).Scan(&user.ID, &user.Name, &user.Login, &user.PasswordHash)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, usecase.ErrUserNotFound
@@ -39,8 +39,8 @@ func (u UserRepository) GetByLogin(ctx context.Context, login string) (*entity.U
 	var user entity.User
 
 	err := u.tx.QueryRowContext(ctx,
-		"SELECT id, login, password FROM users WHERE login = $1", login,
-	).Scan(&user.ID, &user.Login, &user.PasswordHash)
+		"SELECT id, name, login, password FROM users WHERE login = $1", login,
+	).Scan(&user.ID, &user.Name, &user.Login, &user.PasswordHash)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, usecase.ErrUserNotFound
@@ -55,8 +55,8 @@ func (u UserRepository) GetByCredential(ctx context.Context, login, passwordHash
 	var user entity.User
 
 	err := u.tx.QueryRowContext(ctx,
-		"SELECT id, login, password FROM users WHERE login = $1 AND password=$2", login, passwordHash,
-	).Scan(&user.ID, &user.Login, &user.PasswordHash)
+		"SELECT id, name, login, password FROM users WHERE login = $1 AND password=$2", login, passwordHash,
+	).Scan(&user.ID, &user.Name, &user.Login, &user.PasswordHash)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, usecase.ErrUserNotFound
@@ -69,8 +69,8 @@ func (u UserRepository) GetByCredential(ctx context.Context, login, passwordHash
 
 func (u UserRepository) Add(ctx context.Context, user *entity.User) error {
 	_, err := u.tx.ExecContext(ctx,
-		"INSERT INTO users(id, login, password) VALUES($1, $2, $3)",
-		user.ID, user.Login, user.PasswordHash,
+		"INSERT INTO users(id, name, login, password) VALUES($1, $2, $3, $4)",
+		user.ID, user.Name, user.Login, user.PasswordHash,
 	)
 	if err != nil {
 		return err

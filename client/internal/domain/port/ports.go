@@ -25,7 +25,7 @@ type TypeDecoder interface {
 }
 
 type GRPCClientRegistrationSupporter interface {
-	Registration(ctx context.Context, login, password string) (string, error)
+	Registration(ctx context.Context, name, login, password string) (string, error)
 }
 
 type GRPCClientLoginSupporter interface {

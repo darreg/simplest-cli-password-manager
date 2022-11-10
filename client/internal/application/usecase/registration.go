@@ -7,6 +7,7 @@ import (
 )
 
 type RegistrationDTO struct {
+	Name           string
 	Login          string
 	Password       string
 	RepeatPassword string
@@ -32,7 +33,12 @@ func Registration(
 		return "", ErrInvalidArgument
 	}
 
-	sessionKey, err = client.Registration(ctx, registrationDTO.Login, registrationDTO.Password)
+	sessionKey, err = client.Registration(
+		ctx,
+		registrationDTO.Name,
+		registrationDTO.Login,
+		registrationDTO.Password,
+	)
 	if err != nil {
 		return "", err
 	}

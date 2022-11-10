@@ -18,6 +18,7 @@ func (c *Collection) Registration(
 	encryptedSessionKey, err := usecase.Registration(
 		ctx,
 		usecase.RegistrationData{
+			Name:     in.Name,
 			Login:    in.Login,
 			Password: in.Password,
 		},

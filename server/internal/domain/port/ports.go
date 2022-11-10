@@ -69,7 +69,3 @@ type Transactor interface {
 	RowQuerier
 	Execer
 }
-
-type TypeDecoder interface {
-	Decode(data []byte) []byte
-}
