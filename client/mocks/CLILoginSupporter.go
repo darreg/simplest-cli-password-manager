@@ -21,18 +21,27 @@ func (_m *CLILoginSupporter) EXPECT() *CLILoginSupporter_Expecter {
 	return &CLILoginSupporter_Expecter{mock: &_m.Mock}
 }
 
-// Login provides a mock function with given fields: ctx, data
-func (_m *CLILoginSupporter) Login(ctx context.Context, data interface{}) error {
-	ret := _m.Called(ctx, data)
+// Login provides a mock function with given fields: ctx
+func (_m *CLILoginSupporter) Login(ctx context.Context) (interface{}, error) {
+	ret := _m.Called(ctx)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, interface{}) error); ok {
-		r0 = rf(ctx, data)
+	var r0 interface{}
+	if rf, ok := ret.Get(0).(func(context.Context) interface{}); ok {
+		r0 = rf(ctx)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(interface{})
+		}
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // CLILoginSupporter_Login_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Login'
@@ -42,20 +51,19 @@ type CLILoginSupporter_Login_Call struct {
 
 // Login is a helper method to define mock.On call
 //  - ctx context.Context
-//  - data interface{}
-func (_e *CLILoginSupporter_Expecter) Login(ctx interface{}, data interface{}) *CLILoginSupporter_Login_Call {
-	return &CLILoginSupporter_Login_Call{Call: _e.mock.On("Login", ctx, data)}
+func (_e *CLILoginSupporter_Expecter) Login(ctx interface{}) *CLILoginSupporter_Login_Call {
+	return &CLILoginSupporter_Login_Call{Call: _e.mock.On("Login", ctx)}
 }
 
-func (_c *CLILoginSupporter_Login_Call) Run(run func(ctx context.Context, data interface{})) *CLILoginSupporter_Login_Call {
+func (_c *CLILoginSupporter_Login_Call) Run(run func(ctx context.Context)) *CLILoginSupporter_Login_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(interface{}))
+		run(args[0].(context.Context))
 	})
 	return _c
 }
 
-func (_c *CLILoginSupporter_Login_Call) Return(_a0 error) *CLILoginSupporter_Login_Call {
-	_c.Call.Return(_a0)
+func (_c *CLILoginSupporter_Login_Call) Return(_a0 interface{}, _a1 error) *CLILoginSupporter_Login_Call {
+	_c.Call.Return(_a0, _a1)
 	return _c
 }
 

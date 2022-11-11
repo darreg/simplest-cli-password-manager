@@ -21,18 +21,27 @@ func (_m *CLIRegistrationSupporter) EXPECT() *CLIRegistrationSupporter_Expecter 
 	return &CLIRegistrationSupporter_Expecter{mock: &_m.Mock}
 }
 
-// Registration provides a mock function with given fields: ctx, data
-func (_m *CLIRegistrationSupporter) Registration(ctx context.Context, data interface{}) error {
-	ret := _m.Called(ctx, data)
+// Registration provides a mock function with given fields: ctx
+func (_m *CLIRegistrationSupporter) Registration(ctx context.Context) (interface{}, error) {
+	ret := _m.Called(ctx)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, interface{}) error); ok {
-		r0 = rf(ctx, data)
+	var r0 interface{}
+	if rf, ok := ret.Get(0).(func(context.Context) interface{}); ok {
+		r0 = rf(ctx)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(interface{})
+		}
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // CLIRegistrationSupporter_Registration_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Registration'
@@ -42,20 +51,19 @@ type CLIRegistrationSupporter_Registration_Call struct {
 
 // Registration is a helper method to define mock.On call
 //  - ctx context.Context
-//  - data interface{}
-func (_e *CLIRegistrationSupporter_Expecter) Registration(ctx interface{}, data interface{}) *CLIRegistrationSupporter_Registration_Call {
-	return &CLIRegistrationSupporter_Registration_Call{Call: _e.mock.On("Registration", ctx, data)}
+func (_e *CLIRegistrationSupporter_Expecter) Registration(ctx interface{}) *CLIRegistrationSupporter_Registration_Call {
+	return &CLIRegistrationSupporter_Registration_Call{Call: _e.mock.On("Registration", ctx)}
 }
 
-func (_c *CLIRegistrationSupporter_Registration_Call) Run(run func(ctx context.Context, data interface{})) *CLIRegistrationSupporter_Registration_Call {
+func (_c *CLIRegistrationSupporter_Registration_Call) Run(run func(ctx context.Context)) *CLIRegistrationSupporter_Registration_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(interface{}))
+		run(args[0].(context.Context))
 	})
 	return _c
 }
 
-func (_c *CLIRegistrationSupporter_Registration_Call) Return(_a0 error) *CLIRegistrationSupporter_Registration_Call {
-	_c.Call.Return(_a0)
+func (_c *CLIRegistrationSupporter_Registration_Call) Return(_a0 interface{}, _a1 error) *CLIRegistrationSupporter_Registration_Call {
+	_c.Call.Return(_a0, _a1)
 	return _c
 }
 

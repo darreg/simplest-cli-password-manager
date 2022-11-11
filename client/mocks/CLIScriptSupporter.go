@@ -21,18 +21,25 @@ func (_m *CLIScriptSupporter) EXPECT() *CLIScriptSupporter_Expecter {
 	return &CLIScriptSupporter_Expecter{mock: &_m.Mock}
 }
 
-// ListOfEntries provides a mock function with given fields: ctx, entries, data
-func (_m *CLIScriptSupporter) ListOfEntries(ctx context.Context, entries []string, data interface{}) error {
-	ret := _m.Called(ctx, entries, data)
+// ListOfEntries provides a mock function with given fields: ctx, entries
+func (_m *CLIScriptSupporter) ListOfEntries(ctx context.Context, entries []string) (int, error) {
+	ret := _m.Called(ctx, entries)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, []string, interface{}) error); ok {
-		r0 = rf(ctx, entries, data)
+	var r0 int
+	if rf, ok := ret.Get(0).(func(context.Context, []string) int); ok {
+		r0 = rf(ctx, entries)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(int)
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, []string) error); ok {
+		r1 = rf(ctx, entries)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // CLIScriptSupporter_ListOfEntries_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ListOfEntries'
@@ -43,35 +50,43 @@ type CLIScriptSupporter_ListOfEntries_Call struct {
 // ListOfEntries is a helper method to define mock.On call
 //  - ctx context.Context
 //  - entries []string
-//  - data interface{}
-func (_e *CLIScriptSupporter_Expecter) ListOfEntries(ctx interface{}, entries interface{}, data interface{}) *CLIScriptSupporter_ListOfEntries_Call {
-	return &CLIScriptSupporter_ListOfEntries_Call{Call: _e.mock.On("ListOfEntries", ctx, entries, data)}
+func (_e *CLIScriptSupporter_Expecter) ListOfEntries(ctx interface{}, entries interface{}) *CLIScriptSupporter_ListOfEntries_Call {
+	return &CLIScriptSupporter_ListOfEntries_Call{Call: _e.mock.On("ListOfEntries", ctx, entries)}
 }
 
-func (_c *CLIScriptSupporter_ListOfEntries_Call) Run(run func(ctx context.Context, entries []string, data interface{})) *CLIScriptSupporter_ListOfEntries_Call {
+func (_c *CLIScriptSupporter_ListOfEntries_Call) Run(run func(ctx context.Context, entries []string)) *CLIScriptSupporter_ListOfEntries_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].([]string), args[2].(interface{}))
+		run(args[0].(context.Context), args[1].([]string))
 	})
 	return _c
 }
 
-func (_c *CLIScriptSupporter_ListOfEntries_Call) Return(_a0 error) *CLIScriptSupporter_ListOfEntries_Call {
-	_c.Call.Return(_a0)
+func (_c *CLIScriptSupporter_ListOfEntries_Call) Return(_a0 int, _a1 error) *CLIScriptSupporter_ListOfEntries_Call {
+	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-// Login provides a mock function with given fields: ctx, data
-func (_m *CLIScriptSupporter) Login(ctx context.Context, data interface{}) error {
-	ret := _m.Called(ctx, data)
+// Login provides a mock function with given fields: ctx
+func (_m *CLIScriptSupporter) Login(ctx context.Context) (interface{}, error) {
+	ret := _m.Called(ctx)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, interface{}) error); ok {
-		r0 = rf(ctx, data)
+	var r0 interface{}
+	if rf, ok := ret.Get(0).(func(context.Context) interface{}); ok {
+		r0 = rf(ctx)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(interface{})
+		}
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // CLIScriptSupporter_Login_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Login'
@@ -81,35 +96,43 @@ type CLIScriptSupporter_Login_Call struct {
 
 // Login is a helper method to define mock.On call
 //  - ctx context.Context
-//  - data interface{}
-func (_e *CLIScriptSupporter_Expecter) Login(ctx interface{}, data interface{}) *CLIScriptSupporter_Login_Call {
-	return &CLIScriptSupporter_Login_Call{Call: _e.mock.On("Login", ctx, data)}
+func (_e *CLIScriptSupporter_Expecter) Login(ctx interface{}) *CLIScriptSupporter_Login_Call {
+	return &CLIScriptSupporter_Login_Call{Call: _e.mock.On("Login", ctx)}
 }
 
-func (_c *CLIScriptSupporter_Login_Call) Run(run func(ctx context.Context, data interface{})) *CLIScriptSupporter_Login_Call {
+func (_c *CLIScriptSupporter_Login_Call) Run(run func(ctx context.Context)) *CLIScriptSupporter_Login_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(interface{}))
+		run(args[0].(context.Context))
 	})
 	return _c
 }
 
-func (_c *CLIScriptSupporter_Login_Call) Return(_a0 error) *CLIScriptSupporter_Login_Call {
-	_c.Call.Return(_a0)
+func (_c *CLIScriptSupporter_Login_Call) Return(_a0 interface{}, _a1 error) *CLIScriptSupporter_Login_Call {
+	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-// Registration provides a mock function with given fields: ctx, data
-func (_m *CLIScriptSupporter) Registration(ctx context.Context, data interface{}) error {
-	ret := _m.Called(ctx, data)
+// Registration provides a mock function with given fields: ctx
+func (_m *CLIScriptSupporter) Registration(ctx context.Context) (interface{}, error) {
+	ret := _m.Called(ctx)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, interface{}) error); ok {
-		r0 = rf(ctx, data)
+	var r0 interface{}
+	if rf, ok := ret.Get(0).(func(context.Context) interface{}); ok {
+		r0 = rf(ctx)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(interface{})
+		}
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // CLIScriptSupporter_Registration_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Registration'
@@ -119,35 +142,41 @@ type CLIScriptSupporter_Registration_Call struct {
 
 // Registration is a helper method to define mock.On call
 //  - ctx context.Context
-//  - data interface{}
-func (_e *CLIScriptSupporter_Expecter) Registration(ctx interface{}, data interface{}) *CLIScriptSupporter_Registration_Call {
-	return &CLIScriptSupporter_Registration_Call{Call: _e.mock.On("Registration", ctx, data)}
+func (_e *CLIScriptSupporter_Expecter) Registration(ctx interface{}) *CLIScriptSupporter_Registration_Call {
+	return &CLIScriptSupporter_Registration_Call{Call: _e.mock.On("Registration", ctx)}
 }
 
-func (_c *CLIScriptSupporter_Registration_Call) Run(run func(ctx context.Context, data interface{})) *CLIScriptSupporter_Registration_Call {
+func (_c *CLIScriptSupporter_Registration_Call) Run(run func(ctx context.Context)) *CLIScriptSupporter_Registration_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(interface{}))
+		run(args[0].(context.Context))
 	})
 	return _c
 }
 
-func (_c *CLIScriptSupporter_Registration_Call) Return(_a0 error) *CLIScriptSupporter_Registration_Call {
-	_c.Call.Return(_a0)
+func (_c *CLIScriptSupporter_Registration_Call) Return(_a0 interface{}, _a1 error) *CLIScriptSupporter_Registration_Call {
+	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-// SelectCommand provides a mock function with given fields: ctx, options, data
-func (_m *CLIScriptSupporter) SelectCommand(ctx context.Context, options []string, data interface{}) error {
-	ret := _m.Called(ctx, options, data)
+// SelectCommand provides a mock function with given fields: ctx, options
+func (_m *CLIScriptSupporter) SelectCommand(ctx context.Context, options []string) (string, error) {
+	ret := _m.Called(ctx, options)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, []string, interface{}) error); ok {
-		r0 = rf(ctx, options, data)
+	var r0 string
+	if rf, ok := ret.Get(0).(func(context.Context, []string) string); ok {
+		r0 = rf(ctx, options)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(string)
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, []string) error); ok {
+		r1 = rf(ctx, options)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // CLIScriptSupporter_SelectCommand_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SelectCommand'
@@ -158,35 +187,41 @@ type CLIScriptSupporter_SelectCommand_Call struct {
 // SelectCommand is a helper method to define mock.On call
 //  - ctx context.Context
 //  - options []string
-//  - data interface{}
-func (_e *CLIScriptSupporter_Expecter) SelectCommand(ctx interface{}, options interface{}, data interface{}) *CLIScriptSupporter_SelectCommand_Call {
-	return &CLIScriptSupporter_SelectCommand_Call{Call: _e.mock.On("SelectCommand", ctx, options, data)}
+func (_e *CLIScriptSupporter_Expecter) SelectCommand(ctx interface{}, options interface{}) *CLIScriptSupporter_SelectCommand_Call {
+	return &CLIScriptSupporter_SelectCommand_Call{Call: _e.mock.On("SelectCommand", ctx, options)}
 }
 
-func (_c *CLIScriptSupporter_SelectCommand_Call) Run(run func(ctx context.Context, options []string, data interface{})) *CLIScriptSupporter_SelectCommand_Call {
+func (_c *CLIScriptSupporter_SelectCommand_Call) Run(run func(ctx context.Context, options []string)) *CLIScriptSupporter_SelectCommand_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].([]string), args[2].(interface{}))
+		run(args[0].(context.Context), args[1].([]string))
 	})
 	return _c
 }
 
-func (_c *CLIScriptSupporter_SelectCommand_Call) Return(_a0 error) *CLIScriptSupporter_SelectCommand_Call {
-	_c.Call.Return(_a0)
+func (_c *CLIScriptSupporter_SelectCommand_Call) Return(_a0 string, _a1 error) *CLIScriptSupporter_SelectCommand_Call {
+	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-// SelectLoginMethod provides a mock function with given fields: ctx, options, data
-func (_m *CLIScriptSupporter) SelectLoginMethod(ctx context.Context, options []string, data interface{}) error {
-	ret := _m.Called(ctx, options, data)
+// SelectLoginMethod provides a mock function with given fields: ctx, options
+func (_m *CLIScriptSupporter) SelectLoginMethod(ctx context.Context, options []string) (string, error) {
+	ret := _m.Called(ctx, options)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, []string, interface{}) error); ok {
-		r0 = rf(ctx, options, data)
+	var r0 string
+	if rf, ok := ret.Get(0).(func(context.Context, []string) string); ok {
+		r0 = rf(ctx, options)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(string)
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, []string) error); ok {
+		r1 = rf(ctx, options)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // CLIScriptSupporter_SelectLoginMethod_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SelectLoginMethod'
@@ -197,35 +232,43 @@ type CLIScriptSupporter_SelectLoginMethod_Call struct {
 // SelectLoginMethod is a helper method to define mock.On call
 //  - ctx context.Context
 //  - options []string
-//  - data interface{}
-func (_e *CLIScriptSupporter_Expecter) SelectLoginMethod(ctx interface{}, options interface{}, data interface{}) *CLIScriptSupporter_SelectLoginMethod_Call {
-	return &CLIScriptSupporter_SelectLoginMethod_Call{Call: _e.mock.On("SelectLoginMethod", ctx, options, data)}
+func (_e *CLIScriptSupporter_Expecter) SelectLoginMethod(ctx interface{}, options interface{}) *CLIScriptSupporter_SelectLoginMethod_Call {
+	return &CLIScriptSupporter_SelectLoginMethod_Call{Call: _e.mock.On("SelectLoginMethod", ctx, options)}
 }
 
-func (_c *CLIScriptSupporter_SelectLoginMethod_Call) Run(run func(ctx context.Context, options []string, data interface{})) *CLIScriptSupporter_SelectLoginMethod_Call {
+func (_c *CLIScriptSupporter_SelectLoginMethod_Call) Run(run func(ctx context.Context, options []string)) *CLIScriptSupporter_SelectLoginMethod_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].([]string), args[2].(interface{}))
+		run(args[0].(context.Context), args[1].([]string))
 	})
 	return _c
 }
 
-func (_c *CLIScriptSupporter_SelectLoginMethod_Call) Return(_a0 error) *CLIScriptSupporter_SelectLoginMethod_Call {
-	_c.Call.Return(_a0)
+func (_c *CLIScriptSupporter_SelectLoginMethod_Call) Return(_a0 string, _a1 error) *CLIScriptSupporter_SelectLoginMethod_Call {
+	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-// SetEntry provides a mock function with given fields: ctx, types, data
-func (_m *CLIScriptSupporter) SetEntry(ctx context.Context, types []string, data interface{}) error {
-	ret := _m.Called(ctx, types, data)
+// SetEntry provides a mock function with given fields: ctx, types
+func (_m *CLIScriptSupporter) SetEntry(ctx context.Context, types []string) (interface{}, error) {
+	ret := _m.Called(ctx, types)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, []string, interface{}) error); ok {
-		r0 = rf(ctx, types, data)
+	var r0 interface{}
+	if rf, ok := ret.Get(0).(func(context.Context, []string) interface{}); ok {
+		r0 = rf(ctx, types)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(interface{})
+		}
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, []string) error); ok {
+		r1 = rf(ctx, types)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // CLIScriptSupporter_SetEntry_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SetEntry'
@@ -236,20 +279,19 @@ type CLIScriptSupporter_SetEntry_Call struct {
 // SetEntry is a helper method to define mock.On call
 //  - ctx context.Context
 //  - types []string
-//  - data interface{}
-func (_e *CLIScriptSupporter_Expecter) SetEntry(ctx interface{}, types interface{}, data interface{}) *CLIScriptSupporter_SetEntry_Call {
-	return &CLIScriptSupporter_SetEntry_Call{Call: _e.mock.On("SetEntry", ctx, types, data)}
+func (_e *CLIScriptSupporter_Expecter) SetEntry(ctx interface{}, types interface{}) *CLIScriptSupporter_SetEntry_Call {
+	return &CLIScriptSupporter_SetEntry_Call{Call: _e.mock.On("SetEntry", ctx, types)}
 }
 
-func (_c *CLIScriptSupporter_SetEntry_Call) Run(run func(ctx context.Context, types []string, data interface{})) *CLIScriptSupporter_SetEntry_Call {
+func (_c *CLIScriptSupporter_SetEntry_Call) Run(run func(ctx context.Context, types []string)) *CLIScriptSupporter_SetEntry_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].([]string), args[2].(interface{}))
+		run(args[0].(context.Context), args[1].([]string))
 	})
 	return _c
 }
 
-func (_c *CLIScriptSupporter_SetEntry_Call) Return(_a0 error) *CLIScriptSupporter_SetEntry_Call {
-	_c.Call.Return(_a0)
+func (_c *CLIScriptSupporter_SetEntry_Call) Return(_a0 interface{}, _a1 error) *CLIScriptSupporter_SetEntry_Call {
+	_c.Call.Return(_a0, _a1)
 	return _c
 }
 

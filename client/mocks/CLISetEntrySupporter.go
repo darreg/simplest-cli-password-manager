@@ -21,18 +21,27 @@ func (_m *CLISetEntrySupporter) EXPECT() *CLISetEntrySupporter_Expecter {
 	return &CLISetEntrySupporter_Expecter{mock: &_m.Mock}
 }
 
-// SetEntry provides a mock function with given fields: ctx, types, data
-func (_m *CLISetEntrySupporter) SetEntry(ctx context.Context, types []string, data interface{}) error {
-	ret := _m.Called(ctx, types, data)
+// SetEntry provides a mock function with given fields: ctx, types
+func (_m *CLISetEntrySupporter) SetEntry(ctx context.Context, types []string) (interface{}, error) {
+	ret := _m.Called(ctx, types)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, []string, interface{}) error); ok {
-		r0 = rf(ctx, types, data)
+	var r0 interface{}
+	if rf, ok := ret.Get(0).(func(context.Context, []string) interface{}); ok {
+		r0 = rf(ctx, types)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(interface{})
+		}
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, []string) error); ok {
+		r1 = rf(ctx, types)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // CLISetEntrySupporter_SetEntry_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SetEntry'
@@ -43,20 +52,19 @@ type CLISetEntrySupporter_SetEntry_Call struct {
 // SetEntry is a helper method to define mock.On call
 //  - ctx context.Context
 //  - types []string
-//  - data interface{}
-func (_e *CLISetEntrySupporter_Expecter) SetEntry(ctx interface{}, types interface{}, data interface{}) *CLISetEntrySupporter_SetEntry_Call {
-	return &CLISetEntrySupporter_SetEntry_Call{Call: _e.mock.On("SetEntry", ctx, types, data)}
+func (_e *CLISetEntrySupporter_Expecter) SetEntry(ctx interface{}, types interface{}) *CLISetEntrySupporter_SetEntry_Call {
+	return &CLISetEntrySupporter_SetEntry_Call{Call: _e.mock.On("SetEntry", ctx, types)}
 }
 
-func (_c *CLISetEntrySupporter_SetEntry_Call) Run(run func(ctx context.Context, types []string, data interface{})) *CLISetEntrySupporter_SetEntry_Call {
+func (_c *CLISetEntrySupporter_SetEntry_Call) Run(run func(ctx context.Context, types []string)) *CLISetEntrySupporter_SetEntry_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].([]string), args[2].(interface{}))
+		run(args[0].(context.Context), args[1].([]string))
 	})
 	return _c
 }
 
-func (_c *CLISetEntrySupporter_SetEntry_Call) Return(_a0 error) *CLISetEntrySupporter_SetEntry_Call {
-	_c.Call.Return(_a0)
+func (_c *CLISetEntrySupporter_SetEntry_Call) Return(_a0 interface{}, _a1 error) *CLISetEntrySupporter_SetEntry_Call {
+	_c.Call.Return(_a0, _a1)
 	return _c
 }
 

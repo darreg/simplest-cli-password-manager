@@ -21,18 +21,25 @@ func (_m *CLISelectCommandSupporter) EXPECT() *CLISelectCommandSupporter_Expecte
 	return &CLISelectCommandSupporter_Expecter{mock: &_m.Mock}
 }
 
-// SelectCommand provides a mock function with given fields: ctx, options, data
-func (_m *CLISelectCommandSupporter) SelectCommand(ctx context.Context, options []string, data interface{}) error {
-	ret := _m.Called(ctx, options, data)
+// SelectCommand provides a mock function with given fields: ctx, options
+func (_m *CLISelectCommandSupporter) SelectCommand(ctx context.Context, options []string) (string, error) {
+	ret := _m.Called(ctx, options)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, []string, interface{}) error); ok {
-		r0 = rf(ctx, options, data)
+	var r0 string
+	if rf, ok := ret.Get(0).(func(context.Context, []string) string); ok {
+		r0 = rf(ctx, options)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(string)
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, []string) error); ok {
+		r1 = rf(ctx, options)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // CLISelectCommandSupporter_SelectCommand_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SelectCommand'
@@ -43,20 +50,19 @@ type CLISelectCommandSupporter_SelectCommand_Call struct {
 // SelectCommand is a helper method to define mock.On call
 //  - ctx context.Context
 //  - options []string
-//  - data interface{}
-func (_e *CLISelectCommandSupporter_Expecter) SelectCommand(ctx interface{}, options interface{}, data interface{}) *CLISelectCommandSupporter_SelectCommand_Call {
-	return &CLISelectCommandSupporter_SelectCommand_Call{Call: _e.mock.On("SelectCommand", ctx, options, data)}
+func (_e *CLISelectCommandSupporter_Expecter) SelectCommand(ctx interface{}, options interface{}) *CLISelectCommandSupporter_SelectCommand_Call {
+	return &CLISelectCommandSupporter_SelectCommand_Call{Call: _e.mock.On("SelectCommand", ctx, options)}
 }
 
-func (_c *CLISelectCommandSupporter_SelectCommand_Call) Run(run func(ctx context.Context, options []string, data interface{})) *CLISelectCommandSupporter_SelectCommand_Call {
+func (_c *CLISelectCommandSupporter_SelectCommand_Call) Run(run func(ctx context.Context, options []string)) *CLISelectCommandSupporter_SelectCommand_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].([]string), args[2].(interface{}))
+		run(args[0].(context.Context), args[1].([]string))
 	})
 	return _c
 }
 
-func (_c *CLISelectCommandSupporter_SelectCommand_Call) Return(_a0 error) *CLISelectCommandSupporter_SelectCommand_Call {
-	_c.Call.Return(_a0)
+func (_c *CLISelectCommandSupporter_SelectCommand_Call) Return(_a0 string, _a1 error) *CLISelectCommandSupporter_SelectCommand_Call {
+	_c.Call.Return(_a0, _a1)
 	return _c
 }
 

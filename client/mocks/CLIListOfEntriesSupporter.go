@@ -21,18 +21,25 @@ func (_m *CLIListOfEntriesSupporter) EXPECT() *CLIListOfEntriesSupporter_Expecte
 	return &CLIListOfEntriesSupporter_Expecter{mock: &_m.Mock}
 }
 
-// ListOfEntries provides a mock function with given fields: ctx, entries, data
-func (_m *CLIListOfEntriesSupporter) ListOfEntries(ctx context.Context, entries []string, data interface{}) error {
-	ret := _m.Called(ctx, entries, data)
+// ListOfEntries provides a mock function with given fields: ctx, entries
+func (_m *CLIListOfEntriesSupporter) ListOfEntries(ctx context.Context, entries []string) (int, error) {
+	ret := _m.Called(ctx, entries)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, []string, interface{}) error); ok {
-		r0 = rf(ctx, entries, data)
+	var r0 int
+	if rf, ok := ret.Get(0).(func(context.Context, []string) int); ok {
+		r0 = rf(ctx, entries)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(int)
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, []string) error); ok {
+		r1 = rf(ctx, entries)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // CLIListOfEntriesSupporter_ListOfEntries_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ListOfEntries'
@@ -43,20 +50,19 @@ type CLIListOfEntriesSupporter_ListOfEntries_Call struct {
 // ListOfEntries is a helper method to define mock.On call
 //  - ctx context.Context
 //  - entries []string
-//  - data interface{}
-func (_e *CLIListOfEntriesSupporter_Expecter) ListOfEntries(ctx interface{}, entries interface{}, data interface{}) *CLIListOfEntriesSupporter_ListOfEntries_Call {
-	return &CLIListOfEntriesSupporter_ListOfEntries_Call{Call: _e.mock.On("ListOfEntries", ctx, entries, data)}
+func (_e *CLIListOfEntriesSupporter_Expecter) ListOfEntries(ctx interface{}, entries interface{}) *CLIListOfEntriesSupporter_ListOfEntries_Call {
+	return &CLIListOfEntriesSupporter_ListOfEntries_Call{Call: _e.mock.On("ListOfEntries", ctx, entries)}
 }
 
-func (_c *CLIListOfEntriesSupporter_ListOfEntries_Call) Run(run func(ctx context.Context, entries []string, data interface{})) *CLIListOfEntriesSupporter_ListOfEntries_Call {
+func (_c *CLIListOfEntriesSupporter_ListOfEntries_Call) Run(run func(ctx context.Context, entries []string)) *CLIListOfEntriesSupporter_ListOfEntries_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].([]string), args[2].(interface{}))
+		run(args[0].(context.Context), args[1].([]string))
 	})
 	return _c
 }
 
-func (_c *CLIListOfEntriesSupporter_ListOfEntries_Call) Return(_a0 error) *CLIListOfEntriesSupporter_ListOfEntries_Call {
-	_c.Call.Return(_a0)
+func (_c *CLIListOfEntriesSupporter_ListOfEntries_Call) Return(_a0 int, _a1 error) *CLIListOfEntriesSupporter_ListOfEntries_Call {
+	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
