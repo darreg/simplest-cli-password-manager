@@ -16,10 +16,10 @@ race:
 	go test -v -race -count=1 ./...
 
 run:
-	go run -ldflags "-X main.buildVersion=v1.0.1 -X main.buildDate=$(NOW)" cmd/client/main.go
+	go run -ldflags "-X main.buildVersion=v1.0.0 -X main.buildDate=$(NOW)" cmd/client/main.go
 
 build:
-	go build -o client -ldflags "-X main.buildVersion=v1.0.1 -X main.buildDate=$(NOW)" cmd/client/main.go
+	go build -o client -ldflags "-X main.buildVersion=v1.0.0 -X main.buildDate=$(NOW)" cmd/client/main.go
 
 cover:
 	go test -short -tags=unit -race -coverprofile=coverage.out ./...
