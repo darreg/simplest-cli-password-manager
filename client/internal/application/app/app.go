@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/alrund/yp-2-project/client/internal/application/usecase"
@@ -114,6 +115,9 @@ func (a *App) Login(
 				fmt.Printf("Check your credentials\n\n")
 				return nil
 			}
+		} else if errors.Is(err, usecase.ErrIncorrectPassword) {
+			fmt.Printf("X Passwords must be the same\n\n")
+			return nil
 		}
 		return err
 	}

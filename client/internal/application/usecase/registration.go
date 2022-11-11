@@ -31,11 +31,11 @@ func Registration(
 
 	registrationDTO, ok := dto.(*RegistrationDTO)
 	if !ok {
-		return "", ErrInvalidArgument
+		return "", ErrInternalError
 	}
 
 	if registrationDTO.Password != registrationDTO.RepeatPassword {
-		return "", ErrInternalError
+		return "", ErrIncorrectPassword
 	}
 
 	sessionKey, err = client.Registration(

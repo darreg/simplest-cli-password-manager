@@ -7,6 +7,10 @@ import (
 	"github.com/alrund/yp-2-project/client/internal/application/usecase"
 )
 
+const MinLoginLength = 3
+const MinPasswordLength = 6
+const MaxLength = 255
+
 // Registration displays the registration form.
 func (c *Collection) Registration(ctx context.Context) (any, error) {
 	qs := []*survey.Question{
@@ -16,19 +20,31 @@ func (c *Collection) Registration(ctx context.Context) (any, error) {
 			Validate: survey.Required,
 		},
 		{
-			Name:     "login",
-			Prompt:   &survey.Input{Message: "Login"},
-			Validate: survey.Required,
+			Name:   "login",
+			Prompt: &survey.Input{Message: "Login"},
+			Validate: survey.ComposeValidators(
+				survey.Required,
+				survey.MinLength(MinLoginLength),
+				survey.MaxLength(MaxLength),
+			),
 		},
 		{
-			Name:     "password",
-			Prompt:   &survey.Password{Message: "Password"},
-			Validate: survey.Required,
+			Name:   "password",
+			Prompt: &survey.Password{Message: "Password"},
+			Validate: survey.ComposeValidators(
+				survey.Required,
+				survey.MinLength(MinPasswordLength),
+				survey.MaxLength(MaxLength),
+			),
 		},
 		{
-			Name:     "repeatpassword",
-			Prompt:   &survey.Password{Message: "Repeat password"},
-			Validate: survey.Required,
+			Name:   "repeatpassword",
+			Prompt: &survey.Password{Message: "Repeat password"},
+			Validate: survey.ComposeValidators(
+				survey.Required,
+				survey.MinLength(MinPasswordLength),
+				survey.MaxLength(MaxLength),
+			),
 		},
 	}
 
