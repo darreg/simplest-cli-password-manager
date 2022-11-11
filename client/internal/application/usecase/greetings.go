@@ -7,6 +7,7 @@ import (
 	"github.com/alrund/yp-2-project/client/internal/domain/port"
 )
 
+// Greetings prints a greeting.
 func Greetings(
 	ctx context.Context,
 	client port.GRPCClientUserGetter,

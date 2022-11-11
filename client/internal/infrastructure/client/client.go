@@ -13,6 +13,7 @@ var (
 	ErrSessionKey = errors.New("no session")
 )
 
+// Client wrapper over GRPC client.
 type Client struct {
 	grpcClient proto.AppClient
 	sessionKey string

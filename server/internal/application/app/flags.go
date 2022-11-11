@@ -4,6 +4,7 @@ import "flag"
 
 const NotAvailable string = "N/A"
 
+// Flags stores information about command-line flags.
 type Flags struct {
 	Debug bool
 	A     string

@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// SessionValidate validates of the session key.
 func SessionValidate(
 	ctx context.Context,
 	encryptedSessionKey string,

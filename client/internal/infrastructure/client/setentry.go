@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+// SetEntry calls the same GRPC method.
 func (c *Client) SetEntry(ctx context.Context, typeID, name, mdata string, data []byte) error {
 	if c.grpcClient == nil {
 		return ErrGRPCClient

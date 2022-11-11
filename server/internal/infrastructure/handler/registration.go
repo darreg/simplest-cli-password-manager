@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// Registration new user registration.
+// Registration registers a new user.
 func (c *Collection) Registration(
 	ctx context.Context,
 	in *proto.RegistrationRequest,

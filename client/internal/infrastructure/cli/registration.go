@@ -7,6 +7,7 @@ import (
 	"github.com/alrund/yp-2-project/client/internal/application/usecase"
 )
 
+// Registration displays the registration form.
 func (c *Collection) Registration(ctx context.Context, data any) error {
 	registrationData, ok := data.(*usecase.RegistrationDTO)
 	if !ok {

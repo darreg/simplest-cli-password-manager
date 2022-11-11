@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// UserRepository implements a repository for user.
 type UserRepository struct {
 	tx *adapter.Transactor
 }

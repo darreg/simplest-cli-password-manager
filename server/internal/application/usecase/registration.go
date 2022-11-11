@@ -15,6 +15,7 @@ type RegistrationData struct {
 	Password string
 }
 
+// Registration adds the user and returns an encrypted session key.
 func Registration(
 	ctx context.Context,
 	regData RegistrationData,

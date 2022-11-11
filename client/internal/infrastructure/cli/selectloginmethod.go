@@ -7,6 +7,7 @@ import (
 	"github.com/alrund/yp-2-project/client/internal/application/usecase"
 )
 
+// SelectLoginMethod displays a list of login methods.
 func (c *Collection) SelectLoginMethod(ctx context.Context, options []string, data any) error {
 	loginMethodIndex, ok := data.(*string)
 	if !ok {

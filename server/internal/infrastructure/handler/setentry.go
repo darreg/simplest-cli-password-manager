@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// SetEntry add Entry.
+// SetEntry adds an entry.
 func (c *Collection) SetEntry(ctx context.Context, in *proto.SetEntryRequest) (*proto.SetEntryResponse, error) {
 	err := usecase.SetEntry(
 		ctx,

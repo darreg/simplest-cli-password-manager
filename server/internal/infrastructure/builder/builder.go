@@ -7,6 +7,7 @@ import (
 	"github.com/alrund/yp-2-project/server/internal/infrastructure/repository"
 )
 
+// Builder builds the application structure.
 func Builder(config *app.Config, logger port.Logger) (*app.App, error) {
 	if config.Debug {
 		err := logger.EnableDebug()

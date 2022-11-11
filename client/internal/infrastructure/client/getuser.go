@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+// GetUser calls the same GRPC method.
 func (c *Client) GetUser(ctx context.Context) (*model.User, error) {
 	if c.grpcClient == nil {
 		return nil, ErrGRPCClient

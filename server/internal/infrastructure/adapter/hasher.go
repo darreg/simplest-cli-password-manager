@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// Hasher hashes the string.
 type Hasher struct{}
 
 func NewHasher() *Hasher {

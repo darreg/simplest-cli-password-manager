@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// Login user authenticate with login and password.
+// Login authenticates the user with username and password.
 func (c *Collection) Login(ctx context.Context, in *proto.LoginRequest) (*proto.LoginResponse, error) {
 	encryptedSessionKey, err := usecase.Login(
 		ctx,

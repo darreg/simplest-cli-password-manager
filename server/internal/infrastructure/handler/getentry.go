@@ -11,7 +11,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// GetEntry returns an Entry.
+// GetEntry gets an entry.
 func (c *Collection) GetEntry(ctx context.Context, in *proto.GetEntryRequest) (*proto.GetEntryResponse, error) {
 	entry, err := usecase.GetEntry(ctx, in.EntryId, c.a.Encryptor, c.a.EntryRepository, c.a.UserRepository)
 	if err != nil {

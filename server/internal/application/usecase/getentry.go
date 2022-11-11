@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// GetEntry gets entry by ID.
 func GetEntry(
 	ctx context.Context,
 	requestedEntryID string,

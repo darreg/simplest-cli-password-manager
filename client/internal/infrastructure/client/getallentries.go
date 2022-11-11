@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+// GetAllEntries calls the same GRPC method.
 func (c *Client) GetAllEntries(ctx context.Context) ([]*model.Entry, error) {
 	if c.grpcClient == nil {
 		return nil, ErrGRPCClient

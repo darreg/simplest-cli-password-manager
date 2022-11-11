@@ -11,6 +11,7 @@ type LoginDTO struct {
 	Password string
 }
 
+// Login processes the authorization form.
 func Login(
 	ctx context.Context,
 	client port.GRPCClientLoginSupporter,

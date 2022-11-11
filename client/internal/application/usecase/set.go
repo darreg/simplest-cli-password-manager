@@ -14,6 +14,7 @@ type SetEntryDTO struct {
 	Data      string
 }
 
+// Set adds an entry.
 func Set(
 	ctx context.Context,
 	client port.GRPCClientSetSupporter,

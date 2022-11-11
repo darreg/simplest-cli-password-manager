@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// GetAllTypes returns a slice of all types.
+// GetAllTypes gets all types.
 func (c *Collection) GetAllTypes(
 	ctx context.Context,
 	in *proto.GetAllTypesRequest,

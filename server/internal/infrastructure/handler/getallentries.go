@@ -11,7 +11,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// GetAllEntries returns a slice of all entries.
+// GetAllEntries gets all entries.
 func (c *Collection) GetAllEntries(
 	ctx context.Context,
 	in *proto.GetAllEntriesRequest,

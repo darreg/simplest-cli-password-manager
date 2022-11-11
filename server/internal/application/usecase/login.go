@@ -14,6 +14,7 @@ type Credential struct {
 	Password string
 }
 
+// Login authorizes the user and returns an encrypted session key.
 func Login(
 	ctx context.Context,
 	cred Credential,

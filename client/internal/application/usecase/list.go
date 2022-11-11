@@ -8,6 +8,7 @@ import (
 	"github.com/alrund/yp-2-project/client/internal/domain/port"
 )
 
+// List displays a list of entries.
 func List(
 	ctx context.Context,
 	client port.GRPCClientListSupporter,

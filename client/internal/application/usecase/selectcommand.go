@@ -7,6 +7,7 @@ import (
 	"github.com/alrund/yp-2-project/client/internal/domain/port"
 )
 
+// SelectCommand processes a list of commands.
 func SelectCommand(
 	ctx context.Context,
 	cliScript port.CLISelectCommandSupporter,

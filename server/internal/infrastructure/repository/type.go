@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// TypeRepository implements a repository for type.
 type TypeRepository struct {
 	tx *adapter.Transactor
 }

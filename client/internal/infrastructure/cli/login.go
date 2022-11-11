@@ -7,6 +7,7 @@ import (
 	"github.com/alrund/yp-2-project/client/internal/application/usecase"
 )
 
+// Login displays the authorization form.
 func (c *Collection) Login(ctx context.Context, data any) error {
 	credential, ok := data.(*usecase.LoginDTO)
 	if !ok {

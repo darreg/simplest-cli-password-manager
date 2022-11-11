@@ -29,6 +29,7 @@ func NewApp(
 	}
 }
 
+// Run starts the application.
 func (a *App) Run(ctx context.Context, client port.GRPCClientSupporter, cliScript port.CLIScriptSupporter) error {
 	cred, err := credentials.NewClientTLSFromFile(a.Config.CertFile, "")
 	if err != nil {
@@ -64,6 +65,7 @@ func (a *App) Run(ctx context.Context, client port.GRPCClientSupporter, cliScrip
 	return nil
 }
 
+// Wait waiting for the command to be entered.
 func (a *App) Wait(
 	ctx context.Context,
 	client port.GRPCClientSupporter,
@@ -93,6 +95,7 @@ func (a *App) Wait(
 	}
 }
 
+// Login authorizes and outputs a greeting.
 func (a *App) Login(
 	ctx context.Context,
 	client port.GRPCClientSupporter,
@@ -132,6 +135,7 @@ func (a *App) Login(
 	return nil
 }
 
+// Command processes user commands.
 func (a *App) Command(
 	ctx context.Context,
 	cliScript port.CLIScriptSupporter,

@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// SessionRepository implements a repository for session.
 type SessionRepository struct {
 	tx *adapter.Transactor
 }

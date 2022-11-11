@@ -7,6 +7,7 @@ import (
 	"github.com/alrund/yp-2-project/client/internal/application/usecase"
 )
 
+// ListOfEntries displays a list of entries.
 func (c *Collection) ListOfEntries(ctx context.Context, entries []string, data any) error {
 	entryIndex, ok := data.(*int)
 	if !ok {

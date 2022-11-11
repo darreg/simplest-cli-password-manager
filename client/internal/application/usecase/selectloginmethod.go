@@ -7,6 +7,7 @@ import (
 	"github.com/alrund/yp-2-project/client/internal/domain/port"
 )
 
+// SelectLoginMethod processes a list of login methods.
 func SelectLoginMethod(
 	ctx context.Context,
 	cliScript port.CLISelectLoginMethodSupporter,

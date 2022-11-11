@@ -4,6 +4,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// Logger wrapper over the external logger.
 type Logger struct {
 	logger *zap.SugaredLogger
 }

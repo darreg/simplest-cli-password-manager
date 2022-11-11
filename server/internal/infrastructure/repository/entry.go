@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// EntryRepository implements a repository for entry.
 type EntryRepository struct {
 	tx *adapter.Transactor
 }

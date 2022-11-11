@@ -4,6 +4,7 @@ import (
 	"github.com/alrund/yp-2-project/server/internal/domain/port"
 )
 
+// Config specifies the configuration.
 type Config struct {
 	Debug           bool   `env-default:"false"`
 	MigrationDir    string `env-default:"migrations"`
@@ -15,6 +16,8 @@ type Config struct {
 	KeyFile         string `env:"KEY_FILE" env-default:"local.key"`
 }
 
+// NewConfig returns configuration data with priority order: flags, env.
+// Each item takes precedence over the next item.
 func NewConfig(loader port.ConfigLoader) (*Config, error) {
 	cfg := &Config{}
 
@@ -25,12 +28,12 @@ func NewConfig(loader port.ConfigLoader) (*Config, error) {
 		return nil, err
 	}
 
-	ReadFlags(flags, cfg)
+	readFlags(flags, cfg)
 
 	return cfg, nil
 }
 
-func ReadFlags(f *Flags, cfg *Config) {
+func readFlags(f *Flags, cfg *Config) {
 	if f.A != NotAvailable {
 		cfg.RunAddress = f.A
 	}

@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
+// Server GRPC server.
 type Server struct {
 	sessionLifeTime, runAddress string
 	certFile, keyFile           string
@@ -39,6 +40,7 @@ func NewServer(
 	}
 }
 
+// Serve starts the GRPC server.
 func (s *Server) Serve(handlerCollection any) error {
 	collection, ok := handlerCollection.(*handler.Collection)
 	if !ok {
@@ -73,6 +75,7 @@ func (s *Server) Serve(handlerCollection any) error {
 	return nil
 }
 
+// Shutdown stops the GRPC server.
 func (s *Server) Shutdown() error {
 	if s.grpcServer == nil {
 		return fmt.Errorf("the server is not running")

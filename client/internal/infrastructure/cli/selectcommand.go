@@ -8,6 +8,7 @@ import (
 	"github.com/alrund/yp-2-project/client/internal/application/usecase"
 )
 
+// SelectCommand displays a list of commands.
 func (c *Collection) SelectCommand(ctx context.Context, options []string, data any) error {
 	commandIndex, ok := data.(*string)
 	if !ok {

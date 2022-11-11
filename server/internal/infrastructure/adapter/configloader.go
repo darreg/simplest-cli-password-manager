@@ -2,6 +2,7 @@ package adapter
 
 import "github.com/ilyakaznacheev/cleanenv"
 
+// ConfigLoader loads configuration data from various sources.
 type ConfigLoader struct{}
 
 func NewConfigLoader() *ConfigLoader {

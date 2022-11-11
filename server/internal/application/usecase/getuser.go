@@ -7,6 +7,7 @@ import (
 	"github.com/alrund/yp-2-project/server/internal/domain/port"
 )
 
+// GetUser gets user.
 func GetUser(
 	ctx context.Context,
 	userRepository port.UserGetter,

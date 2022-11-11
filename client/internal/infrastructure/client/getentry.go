@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+// GetEntry calls the same GRPC method.
 func (c *Client) GetEntry(ctx context.Context, entryID string) (*model.Entry, error) {
 	if c.grpcClient == nil {
 		return nil, ErrGRPCClient

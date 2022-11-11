@@ -8,6 +8,7 @@ import (
 	"github.com/alrund/yp-2-project/server/internal/domain/port"
 )
 
+// GetAllTypes gets all types.
 func GetAllTypes(
 	ctx context.Context,
 	typeRepository port.TypeAllGetter,

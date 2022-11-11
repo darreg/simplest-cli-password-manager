@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// GetUser returns an User.
+// GetUser gets a user.
 func (c *Collection) GetUser(ctx context.Context, in *proto.GetUserRequest) (*proto.GetUserResponse, error) {
 	user, err := usecase.GetUser(ctx, c.a.UserRepository)
 	if err != nil {

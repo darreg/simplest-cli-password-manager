@@ -8,6 +8,7 @@ import (
 	"github.com/alrund/yp-2-project/server/internal/domain/port"
 )
 
+// GetAllEntries gets all user entries.
 func GetAllEntries(
 	ctx context.Context,
 	entryRepository port.EntryAllByUserGetter,

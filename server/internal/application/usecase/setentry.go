@@ -16,6 +16,7 @@ type SetEntryDTO struct {
 	Data     []byte
 }
 
+// SetEntry adds an entry.
 func SetEntry(
 	ctx context.Context,
 	entryDTO *SetEntryDTO,

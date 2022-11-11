@@ -8,6 +8,7 @@ import (
 
 type txKey struct{}
 
+// Transactor supports working with transactions.
 type Transactor struct {
 	DB *sql.DB
 }

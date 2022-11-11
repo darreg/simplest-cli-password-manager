@@ -13,6 +13,7 @@ type RegistrationDTO struct {
 	RepeatPassword string
 }
 
+// Registration processes the registration form.
 func Registration(
 	ctx context.Context,
 	client port.GRPCClientRegistrationSupporter,

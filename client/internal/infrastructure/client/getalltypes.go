@@ -7,6 +7,7 @@ import (
 	"github.com/alrund/yp-2-project/client/pkg/proto"
 )
 
+// GetAllTypes calls the same GRPC method.
 func (c *Client) GetAllTypes(ctx context.Context) ([]*model.Type, error) {
 	if c.grpcClient == nil {
 		return nil, ErrGRPCClient

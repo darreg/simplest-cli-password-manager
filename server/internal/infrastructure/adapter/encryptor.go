@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 )
 
+// Encryptor encrypts/decrypts data.
 type Encryptor struct {
 	CipherPass string
 }

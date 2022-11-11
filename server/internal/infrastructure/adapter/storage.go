@@ -11,6 +11,7 @@ import (
 	_ "github.com/jackc/pgx/v4/stdlib" // pgx
 )
 
+// Storage wrapper over data storage.
 type Storage struct {
 	connect *sql.DB
 }

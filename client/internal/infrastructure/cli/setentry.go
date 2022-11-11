@@ -7,6 +7,7 @@ import (
 	"github.com/alrund/yp-2-project/client/internal/application/usecase"
 )
 
+// SetEntry displays the form for adding an entry.
 func (c *Collection) SetEntry(ctx context.Context, types []string, data any) error {
 	setEntryDTO, ok := data.(*usecase.SetEntryDTO)
 	if !ok {
