@@ -7,9 +7,11 @@ import (
 	"github.com/alrund/yp-2-project/client/internal/application/usecase"
 )
 
-const MinLoginLength = 3
-const MinPasswordLength = 6
-const MaxLength = 255
+const (
+	MinLoginLength    = 3
+	MinPasswordLength = 6
+	MaxLength         = 255
+)
 
 // Registration displays the registration form.
 func (c *Collection) Registration(ctx context.Context) (any, error) {
