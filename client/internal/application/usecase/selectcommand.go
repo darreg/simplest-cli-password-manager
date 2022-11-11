@@ -13,8 +13,6 @@ func SelectCommand(
 	cliScript port.CLISelectCommandSupporter,
 	commands map[string]func() (string, error),
 ) (func() (string, error), error) {
-	var selectedCommandName string
-
 	commandNames := make([]string, len(commands))
 	var i int
 	for commandName := range commands {
@@ -24,7 +22,7 @@ func SelectCommand(
 
 	sort.Strings(commandNames)
 
-	err := cliScript.SelectCommand(ctx, commandNames, &selectedCommandName)
+	selectedCommandName, err := cliScript.SelectCommand(ctx, commandNames)
 	if err != nil {
 		return nil, err
 	}

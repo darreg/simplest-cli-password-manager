@@ -4,26 +4,21 @@ import (
 	"context"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/alrund/yp-2-project/client/internal/application/usecase"
 )
 
 // SelectLoginMethod displays a list of login methods.
-func (c *Collection) SelectLoginMethod(ctx context.Context, options []string, data any) error {
-	loginMethodIndex, ok := data.(*string)
-	if !ok {
-		return usecase.ErrInvalidArgument
-	}
-
+func (c *Collection) SelectLoginMethod(ctx context.Context, options []string) (string, error) {
 	prompt := &survey.Select{
 		Message: "Choose a login method:",
 		Options: options,
 		Default: "Login",
 	}
 
-	err := survey.AskOne(prompt, loginMethodIndex)
+	var loginMethodIndex string
+	err := survey.AskOne(prompt, &loginMethodIndex)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	return loginMethodIndex, nil
 }

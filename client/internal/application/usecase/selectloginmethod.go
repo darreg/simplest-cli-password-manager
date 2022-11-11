@@ -13,8 +13,6 @@ func SelectLoginMethod(
 	cliScript port.CLISelectLoginMethodSupporter,
 	loginMethods map[string]func() (string, error),
 ) (func() (string, error), error) {
-	var loginMethodName string
-
 	names := make([]string, len(loginMethods))
 	var i int
 	for methodName := range loginMethods {
@@ -24,7 +22,7 @@ func SelectLoginMethod(
 
 	sort.Strings(names)
 
-	err := cliScript.SelectLoginMethod(ctx, names, &loginMethodName)
+	loginMethodName, err := cliScript.SelectLoginMethod(ctx, names)
 	if err != nil {
 		return nil, err
 	}

@@ -8,12 +8,7 @@ import (
 )
 
 // SetEntry displays the form for adding an entry.
-func (c *Collection) SetEntry(ctx context.Context, types []string, data any) error {
-	setEntryDTO, ok := data.(*usecase.SetEntryDTO)
-	if !ok {
-		return usecase.ErrInvalidArgument
-	}
-
+func (c *Collection) SetEntry(ctx context.Context, types []string) (any, error) {
 	qs := []*survey.Question{
 		{
 			Name: "typeindex",
@@ -46,10 +41,11 @@ func (c *Collection) SetEntry(ctx context.Context, types []string, data any) err
 		},
 	}
 
+	setEntryDTO := &usecase.SetEntryDTO{}
 	err := survey.Ask(qs, setEntryDTO)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return setEntryDTO, nil
 }

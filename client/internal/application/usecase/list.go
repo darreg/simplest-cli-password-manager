@@ -25,8 +25,7 @@ func List(
 		entryNames[i] = entry.Name
 	}
 
-	var entryIndex int
-	err = cliScript.ListOfEntries(ctx, entryNames, &entryIndex)
+	entryIndex, err := cliScript.ListOfEntries(ctx, entryNames)
 	if err != nil {
 		return "", err
 	}

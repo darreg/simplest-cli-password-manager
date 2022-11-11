@@ -22,10 +22,14 @@ func Login(
 		sessionKey string
 	)
 
-	loginDTO := &LoginDTO{}
-	err = cliScript.Login(ctx, loginDTO)
+	dto, err := cliScript.Login(ctx)
 	if err != nil {
 		return "", err
+	}
+
+	loginDTO, ok := dto.(*LoginDTO)
+	if !ok {
+		return "", ErrInternalError
 	}
 
 	sessionKey, err = client.Login(ctx, loginDTO.Login, loginDTO.Password)

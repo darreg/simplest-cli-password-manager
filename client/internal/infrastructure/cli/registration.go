@@ -8,12 +8,7 @@ import (
 )
 
 // Registration displays the registration form.
-func (c *Collection) Registration(ctx context.Context, data any) error {
-	registrationData, ok := data.(*usecase.RegistrationDTO)
-	if !ok {
-		return usecase.ErrInvalidArgument
-	}
-
+func (c *Collection) Registration(ctx context.Context) (any, error) {
 	qs := []*survey.Question{
 		{
 			Name:     "name",
@@ -37,10 +32,11 @@ func (c *Collection) Registration(ctx context.Context, data any) error {
 		},
 	}
 
+	registrationData := &usecase.RegistrationDTO{}
 	err := survey.Ask(qs, registrationData)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return registrationData, nil
 }

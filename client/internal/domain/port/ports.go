@@ -52,32 +52,30 @@ type GRPCClientSupporter interface {
 	GRPCClientListSupporter
 	GRPCClientSetSupporter
 	GRPCClientUserGetter
-
-	// RemoveEntry(ctx context.Context, entryID string) error
 }
 
 type CLISelectLoginMethodSupporter interface {
-	SelectLoginMethod(ctx context.Context, options []string, data any) error
+	SelectLoginMethod(ctx context.Context, options []string) (string, error)
 }
 
 type CLILoginSupporter interface {
-	Login(ctx context.Context, data any) error
+	Login(ctx context.Context) (any, error)
 }
 
 type CLIRegistrationSupporter interface {
-	Registration(ctx context.Context, data any) error
+	Registration(ctx context.Context) (any, error)
 }
 
 type CLISelectCommandSupporter interface {
-	SelectCommand(ctx context.Context, options []string, data any) error
+	SelectCommand(ctx context.Context, options []string) (string, error)
 }
 
 type CLISetEntrySupporter interface {
-	SetEntry(ctx context.Context, types []string, data any) error
+	SetEntry(ctx context.Context, types []string) (any, error)
 }
 
 type CLIListOfEntriesSupporter interface {
-	ListOfEntries(ctx context.Context, entries []string, data any) error
+	ListOfEntries(ctx context.Context, entries []string) (int, error)
 }
 
 type CLIScriptSupporter interface {

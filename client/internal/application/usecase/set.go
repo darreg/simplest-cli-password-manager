@@ -26,10 +26,14 @@ func Set(
 		typeNames[i] = tp.Name
 	}
 
-	entryDTO := &SetEntryDTO{}
-	err := cliScript.SetEntry(ctx, typeNames, entryDTO)
+	dto, err := cliScript.SetEntry(ctx, typeNames)
 	if err != nil {
 		return "", err
+	}
+
+	entryDTO, ok := dto.(*SetEntryDTO)
+	if !ok {
+		return "", ErrInternalError
 	}
 
 	err = client.SetEntry(ctx, types[entryDTO.TypeIndex].ID, entryDTO.Name, entryDTO.Metadata, []byte(entryDTO.Data))

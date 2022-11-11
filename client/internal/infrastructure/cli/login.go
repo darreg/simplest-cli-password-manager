@@ -8,12 +8,7 @@ import (
 )
 
 // Login displays the authorization form.
-func (c *Collection) Login(ctx context.Context, data any) error {
-	credential, ok := data.(*usecase.LoginDTO)
-	if !ok {
-		return usecase.ErrInvalidArgument
-	}
-
+func (c *Collection) Login(ctx context.Context) (any, error) {
 	qs := []*survey.Question{
 		{
 			Name:     "login",
@@ -27,10 +22,11 @@ func (c *Collection) Login(ctx context.Context, data any) error {
 		},
 	}
 
+	credential := &usecase.LoginDTO{}
 	err := survey.Ask(qs, credential)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return credential, nil
 }

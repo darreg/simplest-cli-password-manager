@@ -24,14 +24,18 @@ func Registration(
 		sessionKey string
 	)
 
-	registrationDTO := &RegistrationDTO{}
-	err = cliScript.Registration(ctx, registrationDTO)
+	dto, err := cliScript.Registration(ctx)
 	if err != nil {
 		return "", err
 	}
 
-	if registrationDTO.Password != registrationDTO.RepeatPassword {
+	registrationDTO, ok := dto.(*RegistrationDTO)
+	if !ok {
 		return "", ErrInvalidArgument
+	}
+
+	if registrationDTO.Password != registrationDTO.RepeatPassword {
+		return "", ErrInternalError
 	}
 
 	sessionKey, err = client.Registration(
