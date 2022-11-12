@@ -2,6 +2,11 @@ package client
 
 import (
 	"context"
+	"log"
+	"net"
+	"testing"
+	"time"
+
 	"github.com/alrund/yp-2-project/client/internal/application/usecase"
 	"github.com/alrund/yp-2-project/client/pkg/proto"
 	"github.com/stretchr/testify/assert"
@@ -9,10 +14,6 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/test/bufconn"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"log"
-	"net"
-	"testing"
-	"time"
 )
 
 const (
