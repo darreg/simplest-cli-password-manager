@@ -89,6 +89,7 @@ func (a *App) Wait(
 		err = a.Command(ctx, cliScript, map[string]func() (string, error){
 			"List": func() (string, error) { return usecase.List(ctx, client, cliScript, types) },
 			"Set":  func() (string, error) { return usecase.Set(ctx, client, cliScript, types) },
+			"Exit": func() (string, error) { return usecase.Exit(ctx) },
 		})
 		if err != nil {
 			return err
