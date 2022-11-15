@@ -13,11 +13,9 @@ func SelectCommand(
 	cliScript port.CLISelectCommandSupporter,
 	commands map[string]func() (string, error),
 ) (func() (string, error), error) {
-	commandNames := make([]string, len(commands))
-	var i int
+	commandNames := make([]string, 0, len(commands))
 	for commandName := range commands {
-		commandNames[i] = commandName
-		i++
+		commandNames = append(commandNames, commandName)
 	}
 
 	sort.Strings(commandNames)
