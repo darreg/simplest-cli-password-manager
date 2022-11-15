@@ -1,1 +1,2 @@
-# yp-2-project
+# Simplest CLI password manager
+Client-server with GRPC communication
